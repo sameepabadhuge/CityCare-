@@ -7,12 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\DTOs\" />
-    <Folder Include="Models\ViewModels\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementation\" />
     <Folder Include="Views\Account\" />
-    <Folder Include="Views\Issue\" />
     <Folder Include="Views\Staff\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>

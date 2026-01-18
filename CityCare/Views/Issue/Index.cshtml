@@ -1,0 +1,39 @@
+﻿@model List<CityCare.Models.ViewModels.IssueListVm>
+
+@{
+    ViewData["Title"] = "Issues";
+}
+
+<h2>Issues</h2>
+
+<p>
+    <a asp-controller="Issue" asp-action="Create">+ Create New Issue</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>User</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Category</td>
+                <td>@item.Status</td>
+                <td>@item.UserName</td>
+                <td>@item.CreatedAt.ToLocalTime()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,32 @@
+﻿@model CityCare.Models.Entities.Issue
+
+@{
+    ViewData["Title"] = "Issue Details";
+}
+
+<h2>Issue Details</h2>
+
+<div>
+    <p><b>Title:</b> @Model.Title</p>
+    <p><b>Description:</b> @Model.Description</p>
+    <p><b>Category:</b> @Model.Category</p>
+    <p><b>Status:</b> @Model.Status</p>
+    <p><b>Location:</b> @Model.LocationText</p>
+    <p><b>Created:</b> @Model.CreatedAt.ToLocalTime()</p>
+    <p><b>UserId:</b> @Model.UserId</p>
+</div>
+
+@if (Model.Images != null && Model.Images.Count > 0)
+{
+    <h4>Images</h4>
+    <ul>
+        @foreach (var img in Model.Images)
+        {
+            <li><a href="@img.ImageUrl" target="_blank">@img.ImageUrl</a></li>
+        }
+    </ul>
+}
+
+<p>
+    <a asp-action="Index">Back</a>
+</p>

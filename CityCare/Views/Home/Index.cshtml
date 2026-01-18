@@ -1,8 +1,53 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "CityCare";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container cc-hero">
+    <div class="row align-items-center w-100 g-5">
+        <!-- Left -->
+        <div class="col-12 col-lg-6">
+            <div class="cc-brand">
+                <div class="cc-brand-icon">
+                    <!-- simple icon -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 21V3a1 1 0 0 1 1-1h10l5 5v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z" stroke="#0d6efd" stroke-width="2" />
+                        <path d="M15 2v5h5" stroke="#0d6efd" stroke-width="2" />
+                        <path d="M7 12h10M7 16h10" stroke="#0d6efd" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <span>CityCare</span>
+            </div>
+
+            <h1 class="cc-title">
+                Together we<br />
+                keep<br />
+                CityCare.
+            </h1>
+
+            <p class="cc-subtitle">
+                CityCare is your smart city issue reporting system.
+                Seamlessly report and track concerns, connect with local authorities,
+                and contribute to a cleaner, safer, and more vibrant community for everyone.
+            </p>
+
+            <a class="btn btn-primary cc-cta"
+               asp-controller="Account"
+               asp-action="Register">
+                Get Started
+            </a>
+
+            <a class="btn btn-link ms-2"
+               asp-controller="Issue"
+               asp-action="Index">
+                View Issues
+            </a>
+        </div>
+
+        <!-- Right -->
+        <div class="col-12 col-lg-6">
+            <div class="cc-card">
+                <img src="~/images/citycare-hero.jpg" alt="CityCare hero image" />
+            </div>
+        </div>
+    </div>
 </div>
