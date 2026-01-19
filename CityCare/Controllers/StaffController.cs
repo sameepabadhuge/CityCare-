@@ -20,25 +20,20 @@ public class StaffController : Controller
         _userManager = userManager;
     }
 
-    // Staff Dashboard with filter: all | pending | inprogress | resolved
+    // -----------------------------
+    // STAFF DASHBOARD (already)
+    // -----------------------------
     public async Task<IActionResult> Dashboard(string filter = "all")
     {
         var staff = await _userManager.GetUserAsync(User);
         if (staff == null) return RedirectToAction("Login", "Account");
 
-        // staff must have city + department
-        if (staff.CityId == null || staff.DepartmentId == null)
-            return Content("Staff profile missing City/Department. Please contact admin.");
-
         var query = _db.Issues
             .Include(i => i.City)
             .Include(i => i.Citizen)
-            .Where(i => i.CityId == staff.CityId); // beginner version: filter by city only
+            .Where(i => i.CityId == staff.CityId);
 
-        // (Later we will also match department by category mapping or department table)
-        // For now: city based filter is enough to start.
-
-        query = filter.ToLower() switch
+        query = filter switch
         {
             "pending" => query.Where(i => i.Status == IssueStatus.Pending),
             "inprogress" => query.Where(i => i.Status == IssueStatus.InProgress),
@@ -48,18 +43,73 @@ public class StaffController : Controller
 
         var issues = await query.OrderByDescending(i => i.CreatedAt).ToListAsync();
 
-        var vm = new StaffDashboardViewModel
+        return View(new StaffDashboardViewModel
         {
             Filter = filter,
             Issues = issues
-        };
-
-        return View(vm);
+        });
     }
 
-    // Staff complaint details + status update (we build next)
-    public IActionResult Details(int id)
+    // -----------------------------
+    // DETAILS (GET)
+    // -----------------------------
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
     {
-        return View();
+        var staff = await _userManager.GetUserAsync(User);
+        if (staff == null) return RedirectToAction("Login", "Account");
+
+        var issue = await _db.Issues
+            .Include(i => i.City)
+            .Include(i => i.Citizen)
+            .Include(i => i.Images)
+            .FirstOrDefaultAsync(i =>
+                i.Id == id &&
+                i.CityId == staff.CityId);
+
+        if (issue == null) return NotFound();
+
+        return View(new StaffIssueDetailsViewModel
+        {
+            Issue = issue,
+            NewStatus = issue.Status
+        });
+    }
+
+    // -----------------------------
+    // UPDATE STATUS (POST)
+    // -----------------------------
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateStatus(StaffIssueDetailsViewModel vm)
+    {
+        var staff = await _userManager.GetUserAsync(User);
+        if (staff == null) return RedirectToAction("Login", "Account");
+
+        var issue = await _db.Issues
+            .Include(i => i.Citizen)
+            .FirstOrDefaultAsync(i =>
+                i.Id == vm.Issue.Id &&
+                i.CityId == staff.CityId);
+
+        if (issue == null) return NotFound();
+
+        // Update status
+        issue.Status = vm.NewStatus;
+
+        // Create notification for citizen
+        _db.Notifications.Add(new Notification
+        {
+            UserId = issue.CitizenId,
+            IssueId = issue.Id,
+            Title = "Complaint Status Updated",
+            Message = $"Your complaint \"{issue.Title}\" status changed to {vm.NewStatus}.",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await _db.SaveChangesAsync();
+
+        TempData["Success"] = "Complaint status updated successfully.";
+        return RedirectToAction(nameof(Details), new { id = issue.Id });
     }
 }
