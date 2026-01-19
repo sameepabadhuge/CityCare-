@@ -1,0 +1,46 @@
+﻿@model List<CityCare.Models.Entities.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="container py-4" style="max-width:900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Notifications</h3>
+
+        <form asp-action="MarkAllRead" method="post">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-outline-secondary btn-sm">Mark all as read</button>
+        </form>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <p class="text-muted mb-0">No notifications yet.</p>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var n in Model)
+                    {
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
+                           asp-action="Open" asp-route-id="@n.Id">
+                            <div>
+                                <div class="fw-semibold">
+                                    @if (!n.IsRead)
+                                    {
+                                        <span class="badge bg-primary me-2">New</span>
+                                    }
+                                    @n.Title
+                                </div>
+                                <div class="text-muted small">@n.Message</div>
+                                <div class="text-muted small">@n.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

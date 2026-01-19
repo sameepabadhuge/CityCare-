@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using CityCare.Data
+@inject AppDbContext Db
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,6 +15,20 @@
 </head>
 
 <body>
+    @{
+        int unreadCount = 0;
+
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            var uid = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!string.IsNullOrEmpty(uid))
+            {
+                unreadCount = Db.Notifications.Count(n => n.UserId == uid && !n.IsRead);
+            }
+        }
+    }
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -34,6 +51,20 @@
                     <ul class="navbar-nav align-items-center">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
+                            <!-- Bell -->
+                            <li class="nav-item me-3 position-relative">
+                                <a class="nav-link" asp-controller="Notification" asp-action="Index" title="Notifications">
+                                    🔔
+                                    @if (unreadCount > 0)
+                                    {
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            @unreadCount
+                                        </span>
+                                    }
+                                </a>
+                            </li>
+
+                            <!-- Role -->
                             <li class="nav-item me-3">
                                 <span class="navbar-text">
                                     @if (User.IsInRole("Staff"))
@@ -47,6 +78,7 @@
                                 </span>
                             </li>
 
+                            <!-- Logout -->
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
@@ -56,7 +88,19 @@
                                 </form>
                             </li>
                         }
+                        else
+                        {
+                            <!-- When not logged in -->
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm"
+                                   asp-controller="Account"
+                                   asp-action="Login">
+                                    Get Started
+                                </a>
+                            </li>
+                        }
                     </ul>
+
                 </div>
             </div>
         </nav>
