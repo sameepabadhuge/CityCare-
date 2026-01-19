@@ -34,7 +34,7 @@
             <div class="container-fluid">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    @if (User.IsInRole("Staff"))
+                    if (User.IsInRole("Staff"))
                     {
                         <a class="navbar-brand" asp-controller="Staff" asp-action="Dashboard">CityCare</a>
                     }
@@ -58,7 +58,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            @if (User.IsInRole("Staff"))
+                            if (User.IsInRole("Staff"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Staff" asp-action="Dashboard">Home</a>
@@ -69,10 +69,12 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Issue" asp-action="Dashboard">Home</a>
                                 </li>
+
+                                <!-- ✅ Only Citizen can see About -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
+                                </li>
                             }
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
-                            </li>
                         }
                     </ul>
 
