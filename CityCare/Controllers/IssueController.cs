@@ -51,7 +51,6 @@ public class IssueController : Controller
 
         await LoadCreateDropdownsAsync();
 
-        // default city from citizen profile
         var vm = new CreateIssueViewModel
         {
             CityId = user.CityId ?? 0
@@ -136,17 +135,47 @@ public class IssueController : Controller
             await _db.SaveChangesAsync();
         }
 
-        // notification
+        // -----------------------------
+        // Citizen notification
+        // -----------------------------
         _db.Notifications.Add(new Notification
         {
             UserId = user.Id,
             IssueId = issue.Id,
             Title = "Complaint Submitted",
             Message = "Your complaint was submitted successfully and is now Pending.",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
         });
 
         await _db.SaveChangesAsync();
+
+        // -----------------------------
+        // ✅ Notify staff (same city + matching department by category)
+        // -----------------------------
+        var dept = await _db.Departments.FirstOrDefaultAsync(d => d.Name == vm.Category);
+
+        if (dept != null)
+        {
+            var staffUsers = await _db.Users
+                .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
+                .ToListAsync();
+
+            foreach (var staff in staffUsers)
+            {
+                _db.Notifications.Add(new Notification
+                {
+                    UserId = staff.Id,
+                    IssueId = issue.Id,
+                    Title = "New Complaint Assigned",
+                    Message = $"New {issue.Category} complaint: \"{issue.Title}\"",
+                    CreatedAt = DateTime.UtcNow,
+                    IsRead = false
+                });
+            }
+
+            await _db.SaveChangesAsync();
+        }
 
         TempData["Success"] = "Complaint submitted successfully!";
         return RedirectToAction(nameof(Dashboard));
@@ -215,7 +244,6 @@ public class IssueController : Controller
 
         if (!ModelState.IsValid)
         {
-            // Go back to details to show errors
             return await Details(vm.IssueId);
         }
 

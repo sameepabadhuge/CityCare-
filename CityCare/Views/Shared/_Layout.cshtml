@@ -32,7 +32,21 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">CityCare</a>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    @if (User.IsInRole("Staff"))
+                    {
+                        <a class="navbar-brand" asp-controller="Staff" asp-action="Dashboard">CityCare</a>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand" asp-controller="Issue" asp-action="Dashboard">CityCare</a>
+                    }
+                }
+                else
+                {
+                    <a class="navbar-brand" asp-controller="Home" asp-action="Index">CityCare</a>
+                }
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,9 +56,24 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <!-- LEFT -->
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Staff"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Staff" asp-action="Dashboard">Home</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Issue" asp-action="Dashboard">Home</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
+                            </li>
+                        }
                     </ul>
 
                     <!-- RIGHT -->
@@ -64,20 +93,6 @@
                                 </a>
                             </li>
 
-                            <!-- Role -->
-                            <li class="nav-item me-3">
-                                <span class="navbar-text">
-                                    @if (User.IsInRole("Staff"))
-                                    {
-                                        <strong>Staff</strong>
-                                    }
-                                    else if (User.IsInRole("Citizen"))
-                                    {
-                                        <strong>Citizen</strong>
-                                    }
-                                </span>
-                            </li>
-
                             <!-- Logout -->
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
@@ -86,17 +101,6 @@
                                         Logout
                                     </button>
                                 </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <!-- When not logged in -->
-                            <li class="nav-item">
-                                <a class="btn btn-primary btn-sm"
-                                   asp-controller="Account"
-                                   asp-action="Login">
-                                    Get Started
-                                </a>
                             </li>
                         }
                     </ul>
