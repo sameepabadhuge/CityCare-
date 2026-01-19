@@ -9,20 +9,12 @@
   <ItemGroup>
     <Compile Remove="Models\DTOs\**" />
     <Compile Remove="Services\**" />
-    <Compile Remove="Views\Issue\**" />
-    <Compile Remove="Views\Staff\**" />
     <Content Remove="Models\DTOs\**" />
     <Content Remove="Services\**" />
-    <Content Remove="Views\Issue\**" />
-    <Content Remove="Views\Staff\**" />
     <EmbeddedResource Remove="Models\DTOs\**" />
     <EmbeddedResource Remove="Services\**" />
-    <EmbeddedResource Remove="Views\Issue\**" />
-    <EmbeddedResource Remove="Views\Staff\**" />
     <None Remove="Models\DTOs\**" />
     <None Remove="Services\**" />
-    <None Remove="Views\Issue\**" />
-    <None Remove="Views\Staff\**" />
   </ItemGroup>
 
   <ItemGroup>

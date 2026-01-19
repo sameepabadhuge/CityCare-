@@ -1,0 +1,77 @@
+﻿@model CityCare.Models.ViewModels.StaffDashboardViewModel
+@{
+    ViewData["Title"] = "Staff Dashboard";
+    string active = Model.Filter?.ToLower() ?? "all";
+}
+
+<div class="container py-4">
+    <h3 class="mb-3">Complaints</h3>
+
+    <div class="mb-3">
+        <a class="btn btn-sm @(active == "all" ? "btn-primary" : "btn-outline-primary")"
+           asp-action="Dashboard" asp-route-filter="all">All</a>
+
+        <a class="btn btn-sm @(active == "pending" ? "btn-primary" : "btn-outline-primary")"
+           asp-action="Dashboard" asp-route-filter="pending">Pending</a>
+
+        <a class="btn btn-sm @(active == "inprogress" ? "btn-primary" : "btn-outline-primary")"
+           asp-action="Dashboard" asp-route-filter="inprogress">In Progress</a>
+
+        <a class="btn btn-sm @(active == "resolved" ? "btn-primary" : "btn-outline-primary")"
+           asp-action="Dashboard" asp-route-filter="resolved">Resolved</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (!Model.Issues.Any())
+            {
+                <p class="text-muted mb-0">No complaints found for this filter.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>City</th>
+                                <th>Citizen</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int n = 1;
+                            }
+                            @foreach (var item in Model.Issues)
+                            {
+                                <tr>
+                                    <td>@n</td>
+                                    <td>@item.Title</td>
+                                    <td>@item.Category</td>
+                                    <td>@item.City?.Name</td>
+                                    <td>@item.Citizen?.FullName</td>
+                                    <td><span class="badge bg-secondary">@item.Status</span></td>
+                                    <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
+                                    <td class="text-end">
+                                        <a class="btn btn-outline-primary btn-sm"
+                                           asp-controller="Staff"
+                                           asp-action="Details"
+                                           asp-route-id="@item.Id">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                n++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

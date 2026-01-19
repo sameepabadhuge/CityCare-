@@ -1,0 +1,70 @@
+﻿@model CityCare.Models.ViewModels.CitizenDashboardViewModel
+@{
+    ViewData["Title"] = "Citizen Dashboard";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">My Complaints</h3>
+
+        <a class="btn btn-primary"
+           asp-controller="Issue"
+           asp-action="Create">
+            Report New Issue
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (!Model.Issues.Any())
+            {
+                <p class="text-muted mb-0">No issues reported yet.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>City</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int n = 1;
+                            }
+                            @foreach (var item in Model.Issues)
+                            {
+                                <tr>
+                                    <td>@n</td>
+                                    <td>@item.Title</td>
+                                    <td>@item.Category</td>
+                                    <td>@item.City?.Name</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    </td>
+                                    <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
+                                    <td class="text-end">
+                                        <a class="btn btn-outline-primary btn-sm"
+                                           asp-controller="Issue"
+                                           asp-action="Details"
+                                           asp-route-id="@item.Id">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                n++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

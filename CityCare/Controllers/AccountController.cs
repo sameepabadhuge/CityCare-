@@ -47,8 +47,8 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        // ✅ Redirect to home page after successful login
-        return RedirectToAction("Index", "Home");
+        // ✅ Redirect based on user role
+        return await RedirectAfterLogin(user);
     }
 
     // --------------------------
