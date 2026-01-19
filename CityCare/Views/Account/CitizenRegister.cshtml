@@ -1,0 +1,67 @@
+﻿@model CityCare.Models.ViewModels.CitizenRegisterViewModel
+@{
+    ViewData["Title"] = "Citizen Registration";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height:85vh;">
+    <div class="card shadow-sm" style="width:520px;">
+        <div class="card-body p-4">
+            <h4 class="text-center mb-4">Citizen Registration</h4>
+
+            <form asp-action="CitizenRegister" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">City</label>
+                    <select asp-for="CityId" class="form-select">
+                        <option value="">-- Select City --</option>
+                        @foreach (var city in ViewBag.Cities)
+                        {
+                            <option value="@city.Id">@city.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CityId" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Password</label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-100">Register</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small>Already have an account? <a asp-action="Login">Login</a></small>
+            </div>
+        </div>
+    </div>
+</div>

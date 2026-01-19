@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,13 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\DTOs\" />
-    <Folder Include="Models\ViewModels\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementation\" />
-    <Folder Include="Views\Account\" />
-    <Folder Include="Views\Issue\" />
-    <Folder Include="Views\Staff\" />
+    <Compile Remove="Models\DTOs\**" />
+    <Compile Remove="Services\**" />
+    <Compile Remove="Views\Issue\**" />
+    <Compile Remove="Views\Staff\**" />
+    <Content Remove="Models\DTOs\**" />
+    <Content Remove="Services\**" />
+    <Content Remove="Views\Issue\**" />
+    <Content Remove="Views\Staff\**" />
+    <EmbeddedResource Remove="Models\DTOs\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="Views\Issue\**" />
+    <EmbeddedResource Remove="Views\Staff\**" />
+    <None Remove="Models\DTOs\**" />
+    <None Remove="Services\**" />
+    <None Remove="Views\Issue\**" />
+    <None Remove="Views\Staff\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
