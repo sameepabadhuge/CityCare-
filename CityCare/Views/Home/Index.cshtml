@@ -1,8 +1,40 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "CityCare";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-5">
+    <div class="row align-items-center g-5">
+
+        <!-- LEFT SIDE -->
+        <div class="col-lg-6">
+            <div class="d-flex align-items-center mb-3">
+                <span class="badge bg-primary me-2">CityCare</span>
+                <strong class="text-primary">CityCare</strong>
+            </div>
+
+            <h1 class="fw-bold" style="line-height:1.15;">
+                Together we<br />
+                keep <span class="text-primary">CityCare.</span>
+            </h1>
+
+            <p class="text-muted mt-3" style="max-width:520px;">
+                CityCare is your smart way to report city issues, track updates, and stay informed.
+                Citizens can submit complaints and follow progress while staff handle issues efficiently.
+            </p>
+
+            <a class="btn btn-primary px-4 mt-3"
+               asp-controller="Account"
+               asp-action="Login">
+                Get Started
+            </a>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="col-lg-6 text-center">
+            <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&auto=format&fit=crop&q=60"
+                 class="img-fluid rounded shadow"
+                 alt="CityCare" style="max-height:320px;" />
+        </div>
+
+    </div>
 </div>
