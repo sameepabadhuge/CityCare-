@@ -1,0 +1,81 @@
+﻿@model CityCare.Models.ViewModels.CreateIssueViewModel
+@{
+    ViewData["Title"] = "Report New Issue";
+}
+
+<div class="container py-4" style="max-width: 800px;">
+    <h3 class="mb-3">Report New Issue</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input asp-for="Title" class="form-control" placeholder="Example: Water leak near road" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="Explain the issue clearly..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Category</label>
+                        <select asp-for="Category" class="form-select">
+                            <option value="">-- Select Category --</option>
+                            @foreach (var c in ViewBag.Categories)
+                            {
+                                <option value="@c.Value">@c.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">City</label>
+                        <select asp-for="CityId" class="form-select">
+                            <option value="">-- Select City --</option>
+                            @foreach (var city in ViewBag.Cities)
+                            {
+                                <option value="@city.Id">@city.Name</option>
+                            }
+                        </select>
+                        <small class="text-muted">Default is your registered city.</small>
+                        <span asp-validation-for="CityId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Location (Village / Address)</label>
+                    <input asp-for="LocationText" class="form-control" placeholder="Example: Mahaweli Road, Peradeniya" />
+                    <span asp-validation-for="LocationText" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Upload Image (optional)</label>
+                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                    <small class="text-muted">Allowed: JPG, PNG, WEBP</small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary">Submit Complaint</button>
+                    <a class="btn btn-outline-secondary" asp-action="Dashboard">Cancel</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
