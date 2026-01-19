@@ -1,0 +1,160 @@
+﻿@model CityCare.Models.ViewModels.IssueDetailsViewModel
+@using CityCare.Models.Entities
+
+@{
+    ViewData["Title"] = "Complaint Details";
+    var issue = Model.Issue;
+
+    string statusClass = issue.Status switch
+    {
+        IssueStatus.Pending => "bg-warning text-dark",
+        IssueStatus.InProgress => "bg-info text-dark",
+        IssueStatus.Resolved => "bg-success",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="container py-4" style="max-width: 900px;">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Complaint Details</h3>
+        <a class="btn btn-outline-secondary" asp-action="Dashboard">Back</a>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="mb-1">@issue.Title</h5>
+                    <div class="text-muted small">Created: @issue.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div>
+                </div>
+                <span class="badge @statusClass px-3 py-2">@issue.Status</span>
+            </div>
+
+            <hr />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="small text-muted">Category</div>
+                    <div class="fw-semibold">@issue.Category</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="small text-muted">City</div>
+                    <div class="fw-semibold">@issue.City?.Name</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted">Location</div>
+                    <div class="fw-semibold">@issue.LocationText</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="small text-muted">Description</div>
+                    <div>@issue.Description</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Images *@
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6 class="mb-3">Images</h6>
+
+            @if (issue.Images == null || !issue.Images.Any())
+            {
+                <p class="text-muted mb-0">No images uploaded.</p>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var img in issue.Images)
+                    {
+                        <div class="col-md-4">
+                            <a href="@img.ImageUrl" target="_blank">
+                                <img src="@img.ImageUrl" class="img-fluid rounded border" alt="Issue image" />
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    @* Rating section *@
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h6 class="mb-3">Rating</h6>
+
+            @if (issue.Status != IssueStatus.Resolved)
+            {
+                <p class="text-muted mb-0">Rating will be available after the complaint is resolved.</p>
+            }
+            else if (issue.Rating != null)
+            {
+                <div class="mb-2">
+                    <strong>Your Rating:</strong>
+                    <span class="ms-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= issue.Rating.Stars)
+                            {
+                                <span style="font-size: 20px;">⭐</span>
+                            }
+                            else
+                            {
+                                <span style="font-size: 20px; opacity:0.25;">⭐</span>
+                            }
+                        }
+                    </span>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(issue.Rating.Comment))
+                {
+                    <div class="text-muted">Comment:</div>
+                    <div>@issue.Rating.Comment</div>
+                }
+            }
+            else
+            {
+                <form asp-action="Rate" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="RateVm.IssueId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Stars (1 - 5)</label>
+                        <select class="form-select" asp-for="RateVm.Stars">
+                            <option value="5">★★★★★ (5)</option>
+                            <option value="4">★★★★☆ (4)</option>
+                            <option value="3">★★★☆☆ (3)</option>
+                            <option value="2">★★☆☆☆ (2)</option>
+                            <option value="1">★☆☆☆☆ (1)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Comment (optional)</label>
+                        <textarea class="form-control" asp-for="RateVm.Comment" rows="3"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary">Submit Rating</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

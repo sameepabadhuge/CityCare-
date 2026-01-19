@@ -23,7 +23,9 @@ public class IssueController : Controller
         _env = env;
     }
 
-    // Citizen Dashboard (already)
+    // -----------------------------
+    // CITIZEN DASHBOARD
+    // -----------------------------
     public async Task<IActionResult> Dashboard()
     {
         var user = await _userManager.GetUserAsync(User);
@@ -70,7 +72,7 @@ public class IssueController : Controller
 
         await LoadCreateDropdownsAsync();
 
-        // if user didn't select, default to their city
+        // default city if not selected
         if (vm.CityId == 0 && user.CityId != null)
             vm.CityId = user.CityId.Value;
 
@@ -99,12 +101,11 @@ public class IssueController : Controller
         };
 
         _db.Issues.Add(issue);
-        await _db.SaveChangesAsync(); // creates Issue.Id
+        await _db.SaveChangesAsync();
 
-        // handle image upload (optional)
+        // upload image (optional)
         if (vm.ImageFile != null && vm.ImageFile.Length > 0)
         {
-            // basic image type check
             var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
             if (!allowed.Contains(vm.ImageFile.ContentType))
             {
@@ -135,7 +136,7 @@ public class IssueController : Controller
             await _db.SaveChangesAsync();
         }
 
-        // create notification (citizen gets success message)
+        // notification
         _db.Notifications.Add(new Notification
         {
             UserId = user.Id,
@@ -144,12 +145,97 @@ public class IssueController : Controller
             Message = "Your complaint was submitted successfully and is now Pending.",
             CreatedAt = DateTime.UtcNow
         });
+
         await _db.SaveChangesAsync();
 
         TempData["Success"] = "Complaint submitted successfully!";
         return RedirectToAction(nameof(Dashboard));
     }
 
+    // -----------------------------
+    // DETAILS (GET)
+    // -----------------------------
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login", "Account");
+
+        var issue = await _db.Issues
+            .Include(i => i.City)
+            .Include(i => i.Images)
+            .Include(i => i.Rating)
+            .FirstOrDefaultAsync(i => i.Id == id && i.CitizenId == user.Id);
+
+        if (issue == null) return NotFound();
+
+        var vm = new IssueDetailsViewModel
+        {
+            Issue = issue,
+            CanRate = issue.Status == IssueStatus.Resolved && issue.Rating == null,
+            ExistingStars = issue.Rating?.Stars,
+            ExistingComment = issue.Rating?.Comment,
+            RateVm = new RateIssueViewModel
+            {
+                IssueId = issue.Id,
+                Stars = 5
+            }
+        };
+
+        return View(vm);
+    }
+
+    // -----------------------------
+    // RATE (POST)
+    // -----------------------------
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Rate(RateIssueViewModel vm)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login", "Account");
+
+        var issue = await _db.Issues
+            .Include(i => i.Rating)
+            .FirstOrDefaultAsync(i => i.Id == vm.IssueId && i.CitizenId == user.Id);
+
+        if (issue == null) return NotFound();
+
+        if (issue.Status != IssueStatus.Resolved)
+        {
+            TempData["Error"] = "You can rate only after the complaint is resolved.";
+            return RedirectToAction(nameof(Details), new { id = vm.IssueId });
+        }
+
+        if (issue.Rating != null)
+        {
+            TempData["Error"] = "You already rated this complaint.";
+            return RedirectToAction(nameof(Details), new { id = vm.IssueId });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            // Go back to details to show errors
+            return await Details(vm.IssueId);
+        }
+
+        _db.Ratings.Add(new Rating
+        {
+            IssueId = issue.Id,
+            Stars = vm.Stars,
+            Comment = vm.Comment,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await _db.SaveChangesAsync();
+
+        TempData["Success"] = "Thank you! Your rating was submitted.";
+        return RedirectToAction(nameof(Details), new { id = vm.IssueId });
+    }
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
     private async Task LoadCreateDropdownsAsync()
     {
         ViewBag.Cities = await _db.Cities
