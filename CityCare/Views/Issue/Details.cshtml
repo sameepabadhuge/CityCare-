@@ -134,25 +134,25 @@
             {
                 <form asp-action="Rate" method="post">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" asp-for="RateVm.IssueId" />
+                    <input type="hidden" name="IssueId" value="@issue.Id" />
 
                     <div class="mb-3">
                         <label class="form-label">Stars (1 - 5)</label>
-                        <select class="form-select" asp-for="RateVm.Stars">
-                            <option value="5">★★★★★ (5)</option>
-                            <option value="4">★★★★☆ (4)</option>
-                            <option value="3">★★★☆☆ (3)</option>
-                            <option value="2">★★☆☆☆ (2)</option>
-                            <option value="1">★☆☆☆☆ (1)</option>
+                        <select class="form-select" name="Stars">
+                            <option value="5">★★★★★ </option>
+                            <option value="4">★★★★☆ </option>
+                            <option value="3">★★★☆☆ </option>
+                            <option value="2">★★☆☆☆ </option>
+                            <option value="1">★☆☆☆☆ </option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Comment (optional)</label>
-                        <textarea class="form-control" asp-for="RateVm.Comment" rows="3"></textarea>
+                        <textarea class="form-control" name="Comment" rows="3"></textarea>
                     </div>
 
-                    <button class="btn btn-primary">Submit Rating</button>
+                    <button type="submit" class="btn btn-primary">Submit Rating</button>
                 </form>
             }
         </div>

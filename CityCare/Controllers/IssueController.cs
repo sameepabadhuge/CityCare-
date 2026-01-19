@@ -224,6 +224,7 @@ public class IssueController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
+        // ✅ FIX: Include all necessary properties
         var issue = await _db.Issues
             .Include(i => i.Rating)
             .FirstOrDefaultAsync(i => i.Id == vm.IssueId && i.CitizenId == user.Id);
@@ -247,6 +248,7 @@ public class IssueController : Controller
             return await Details(vm.IssueId);
         }
 
+        // Create rating
         _db.Ratings.Add(new Rating
         {
             IssueId = issue.Id,
@@ -256,6 +258,43 @@ public class IssueController : Controller
         });
 
         await _db.SaveChangesAsync();
+
+        // -----------------------------
+        // ✅ Notify staff about the rating
+        // -----------------------------
+        var dept = await _db.Departments.FirstOrDefaultAsync(d => d.Name == issue.Category);
+
+        if (dept != null)
+        {
+            var staffUsers = await _db.Users
+                .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
+                .ToListAsync();
+
+            var starEmoji = vm.Stars switch
+            {
+                5 => "⭐⭐⭐⭐⭐",
+                4 => "⭐⭐⭐⭐",
+                3 => "⭐⭐⭐",
+                2 => "⭐⭐",
+                1 => "⭐",
+                _ => ""
+            };
+
+            foreach (var staff in staffUsers)
+            {
+                _db.Notifications.Add(new Notification
+                {
+                    UserId = staff.Id,
+                    IssueId = issue.Id,
+                    Title = "Complaint Rated",
+                    Message = $"Complaint \"{issue.Title}\" received {starEmoji} rating.",
+                    CreatedAt = DateTime.UtcNow,
+                    IsRead = false
+                });
+            }
+
+            await _db.SaveChangesAsync();
+        }
 
         TempData["Success"] = "Thank you! Your rating was submitted.";
         return RedirectToAction(nameof(Details), new { id = vm.IssueId });
