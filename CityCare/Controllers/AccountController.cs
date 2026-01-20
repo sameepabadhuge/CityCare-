@@ -39,7 +39,12 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        var result = await _signInManager.PasswordSignInAsync(user, vm.Password, vm.RememberMe, lockoutOnFailure: true);
+        var result = await _signInManager.PasswordSignInAsync(
+            user,
+            vm.Password,
+            vm.RememberMe,
+            lockoutOnFailure: true
+        );
 
         if (!result.Succeeded)
         {
@@ -68,7 +73,11 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> CitizenRegister()
     {
-        ViewBag.Cities = await _db.Cities.Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
+        ViewBag.Cities = await _db.Cities
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+
         return View(new CitizenRegisterViewModel());
     }
 
@@ -76,7 +85,10 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CitizenRegister(CitizenRegisterViewModel vm)
     {
-        ViewBag.Cities = await _db.Cities.Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
+        ViewBag.Cities = await _db.Cities
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
 
         if (!ModelState.IsValid) return View(vm);
 
@@ -94,7 +106,7 @@ public class AccountController : Controller
             Email = vm.Email,
             Address = vm.Address,
             CityId = vm.CityId,
-            DepartmentId = null // citizen has no department
+            DepartmentId = null
         };
 
         var create = await _userManager.CreateAsync(user, vm.Password);
@@ -104,11 +116,11 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        // ✅ No role selection UI
+        // ✅ Auto role (no UI role selection)
         await _userManager.AddToRoleAsync(user, "Citizen");
 
-        // ✅ Redirect to Login page after successful registration
-        return RedirectToAction("Login");
+        // ✅ Redirect to Login after register
+        return RedirectToAction(nameof(Login));
     }
 
     // --------------------------
@@ -117,8 +129,16 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> StaffRegister()
     {
-        ViewBag.Cities = await _db.Cities.Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
-        ViewBag.Departments = await _db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToListAsync();
+        ViewBag.Cities = await _db.Cities
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+
+        ViewBag.Departments = await _db.Departments
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.Name)
+            .ToListAsync();
+
         return View(new StaffRegisterViewModel());
     }
 
@@ -126,8 +146,15 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> StaffRegister(StaffRegisterViewModel vm)
     {
-        ViewBag.Cities = await _db.Cities.Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
-        ViewBag.Departments = await _db.Departments.Where(d => d.IsActive).OrderBy(d => d.Name).ToListAsync();
+        ViewBag.Cities = await _db.Cities
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+
+        ViewBag.Departments = await _db.Departments
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.Name)
+            .ToListAsync();
 
         if (!ModelState.IsValid) return View(vm);
 
@@ -138,7 +165,7 @@ public class AccountController : Controller
         if (!depExists) ModelState.AddModelError(nameof(vm.DepartmentId), "Please select a valid department.");
         if (!cityExists || !depExists) return View(vm);
 
-        // ✅ Validate staff access code matches City + Department
+        // ✅ Validate StaffAccessCode
         var codeRow = await _db.StaffAccessCodes.FirstOrDefaultAsync(x =>
             x.IsActive &&
             x.CityId == vm.CityId &&
@@ -147,7 +174,8 @@ public class AccountController : Controller
 
         if (codeRow == null)
         {
-            ModelState.AddModelError(nameof(vm.StaffAccessCode), "Invalid staff access code for selected city and department.");
+            ModelState.AddModelError(nameof(vm.StaffAccessCode),
+                "Invalid staff access code for selected city and department.");
             return View(vm);
         }
 
@@ -156,7 +184,7 @@ public class AccountController : Controller
             FullName = vm.FullName,
             UserName = vm.Email,
             Email = vm.Email,
-            Address = null, // staff doesn't need address
+            Address = null,
             CityId = vm.CityId,
             DepartmentId = vm.DepartmentId
         };
@@ -168,11 +196,11 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        // ✅ No role selection UI
+        // ✅ Auto role (no UI role selection)
         await _userManager.AddToRoleAsync(user, "Staff");
 
-        // ✅ Redirect to Login page after successful registration
-        return RedirectToAction("Login");
+        // ✅ Redirect to Login after register
+        return RedirectToAction(nameof(Login));
     }
 
     // --------------------------
@@ -180,6 +208,9 @@ public class AccountController : Controller
     // --------------------------
     private async Task<IActionResult> RedirectAfterLogin(User user)
     {
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+            return RedirectToAction("Dashboard", "Admin");  // Changed from StaffCodes to Dashboard
+
         if (await _userManager.IsInRoleAsync(user, "Staff"))
             return RedirectToAction("Dashboard", "Staff");
 
@@ -187,3 +218,5 @@ public class AccountController : Controller
         return RedirectToAction("Dashboard", "Issue");
     }
 }
+
+

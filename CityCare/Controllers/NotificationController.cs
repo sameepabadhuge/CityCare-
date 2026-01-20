@@ -19,6 +19,17 @@ public class NotificationController : Controller
         _userManager = userManager;
     }
 
+    // ✅ NEW: API endpoint to get unread count
+    [HttpGet]
+    public async Task<IActionResult> GetUnreadCount()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Json(new { count = 0 });
+
+        var count = await _db.Notifications.CountAsync(n => n.UserId == user.Id && !n.IsRead);
+        return Json(new { count });
+    }
+
     // List notifications
     public async Task<IActionResult> Index()
     {

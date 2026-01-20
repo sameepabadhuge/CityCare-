@@ -151,9 +151,10 @@ public class IssueController : Controller
         await _db.SaveChangesAsync();
 
         // -----------------------------
-        // ✅ Notify staff (same city + matching department by category)
+        // ✅ IMPROVED: Notify staff (case-insensitive + better matching)
         // -----------------------------
-        var dept = await _db.Departments.FirstOrDefaultAsync(d => d.Name == vm.Category);
+        var dept = await _db.Departments
+            .FirstOrDefaultAsync(d => d.Name.ToLower() == vm.Category.ToLower() && d.IsActive);
 
         if (dept != null)
         {
@@ -161,20 +162,23 @@ public class IssueController : Controller
                 .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
                 .ToListAsync();
 
-            foreach (var staff in staffUsers)
+            if (staffUsers.Any())
             {
-                _db.Notifications.Add(new Notification
+                foreach (var staff in staffUsers)
                 {
-                    UserId = staff.Id,
-                    IssueId = issue.Id,
-                    Title = "New Complaint Assigned",
-                    Message = $"New {issue.Category} complaint: \"{issue.Title}\"",
-                    CreatedAt = DateTime.UtcNow,
-                    IsRead = false
-                });
-            }
+                    _db.Notifications.Add(new Notification
+                    {
+                        UserId = staff.Id,
+                        IssueId = issue.Id,
+                        Title = "New Complaint Assigned",
+                        Message = $"New {issue.Category} complaint: \"{issue.Title}\"",
+                        CreatedAt = DateTime.UtcNow,
+                        IsRead = false
+                    });
+                }
 
-            await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
+            }
         }
 
         TempData["Success"] = "Complaint submitted successfully!";
@@ -224,7 +228,6 @@ public class IssueController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
-        // ✅ FIX: Include all necessary properties
         var issue = await _db.Issues
             .Include(i => i.Rating)
             .FirstOrDefaultAsync(i => i.Id == vm.IssueId && i.CitizenId == user.Id);
@@ -260,9 +263,10 @@ public class IssueController : Controller
         await _db.SaveChangesAsync();
 
         // -----------------------------
-        // ✅ Notify staff about the rating
+        // ✅ IMPROVED: Notify staff about the rating (case-insensitive)
         // -----------------------------
-        var dept = await _db.Departments.FirstOrDefaultAsync(d => d.Name == issue.Category);
+        var dept = await _db.Departments
+            .FirstOrDefaultAsync(d => d.Name.ToLower() == issue.Category.ToLower() && d.IsActive);
 
         if (dept != null)
         {
@@ -270,30 +274,33 @@ public class IssueController : Controller
                 .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
                 .ToListAsync();
 
-            var starEmoji = vm.Stars switch
+            if (staffUsers.Any())
             {
-                5 => "⭐⭐⭐⭐⭐",
-                4 => "⭐⭐⭐⭐",
-                3 => "⭐⭐⭐",
-                2 => "⭐⭐",
-                1 => "⭐",
-                _ => ""
-            };
-
-            foreach (var staff in staffUsers)
-            {
-                _db.Notifications.Add(new Notification
+                var starEmoji = vm.Stars switch
                 {
-                    UserId = staff.Id,
-                    IssueId = issue.Id,
-                    Title = "Complaint Rated",
-                    Message = $"Complaint \"{issue.Title}\" received {starEmoji} rating.",
-                    CreatedAt = DateTime.UtcNow,
-                    IsRead = false
-                });
-            }
+                    5 => "⭐⭐⭐⭐⭐",
+                    4 => "⭐⭐⭐⭐",
+                    3 => "⭐⭐⭐",
+                    2 => "⭐⭐",
+                    1 => "⭐",
+                    _ => ""
+                };
 
-            await _db.SaveChangesAsync();
+                foreach (var staff in staffUsers)
+                {
+                    _db.Notifications.Add(new Notification
+                    {
+                        UserId = staff.Id,
+                        IssueId = issue.Id,
+                        Title = "Complaint Rated",
+                        Message = $"Complaint \"{issue.Title}\" received {starEmoji} rating.",
+                        CreatedAt = DateTime.UtcNow,
+                        IsRead = false
+                    });
+                }
+
+                await _db.SaveChangesAsync();
+            }
         }
 
         TempData["Success"] = "Thank you! Your rating was submitted.";
@@ -315,5 +322,23 @@ public class IssueController : Controller
             new SelectListItem("Water", "Water"),
             new SelectListItem("Garbage", "Garbage")
         };
+    }
+
+    // Unread Notifications Count
+    public int GetUnreadNotificationsCount()
+    {
+        int unreadCount = 0;
+
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            var uid = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!string.IsNullOrEmpty(uid))
+            {
+                unreadCount = _db.Notifications.Count(n => n.UserId == uid && !n.IsRead);
+            }
+        }
+
+        return unreadCount;
     }
 }

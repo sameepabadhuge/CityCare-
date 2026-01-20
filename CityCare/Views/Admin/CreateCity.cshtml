@@ -1,0 +1,39 @@
+@model CityCare.Models.Entities.City
+@{
+    ViewData["Title"] = "Create City";
+}
+
+<div class="container py-4" style="max-width:600px;">
+    <h3 class="mb-4">Create New City</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="CreateCity" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">City Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="e.g., Colombo" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Code" class="form-label">City Code (3 letters)</label>
+                    <input asp-for="Code" class="form-control" placeholder="e.g., CMB" maxlength="10" />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsActive" class="form-check-input" checked />
+                    <label asp-for="IsActive" class="form-check-label">Active</label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Create City</button>
+                    <a asp-action="Cities" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

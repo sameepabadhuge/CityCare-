@@ -1,0 +1,61 @@
+﻿@model CityCare.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <div class="row g-4">
+        <!-- Cities Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Cities</h5>
+                    <p class="display-6 mb-0">@Model.TotalCities</p>
+                    <p class="text-muted">@Model.ActiveCities Active</p>
+                    <a asp-action="Cities" class="btn btn-outline-primary btn-sm">Manage Cities</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departments Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Departments</h5>
+                    <p class="display-6 mb-0">@Model.TotalDepartments</p>
+                    <p class="text-muted">@Model.ActiveDepartments Active</p>
+                    <a asp-action="Departments" class="btn btn-outline-success btn-sm">Manage Departments</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Codes Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Staff Access Codes</h5>
+                    <p class="display-6 mb-0">@Model.TotalStaffCodes</p>
+                    <p class="text-muted">@Model.ActiveStaffCodes Active</p>
+                    <a asp-action="StaffCodes" class="btn btn-outline-info btn-sm">Manage Codes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h4>Quick Actions</h4>
+        <div class="list-group">
+            <a asp-action="CreateCity" class="list-group-item list-group-item-action">
+                ➕ Add New City
+            </a>
+            <a asp-action="CreateDepartment" class="list-group-item list-group-item-action">
+                ➕ Add New Department
+            </a>
+            <a asp-action="CreateStaffCode" class="list-group-item list-group-item-action">
+                ➕ Generate Staff Access Code
+            </a>
+        </div>
+    </div>
+</div>

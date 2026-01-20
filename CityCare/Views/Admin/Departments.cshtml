@@ -1,0 +1,60 @@
+@model List<CityCare.Models.Entities.Department>
+@{
+    ViewData["Title"] = "Manage Departments";
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Manage Departments</h3>
+        <a asp-action="CreateDepartment" class="btn btn-primary">? Add Department</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var dept in Model)
+                    {
+                        <tr>
+                            <td>@dept.Name</td>
+                            <td><code>@dept.Code</code></td>
+                            <td>
+                                @if (dept.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="EditDepartment" asp-route-id="@dept.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form asp-action="ToggleDepartment" asp-route-id="@dept.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Toggle</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

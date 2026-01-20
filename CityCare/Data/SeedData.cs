@@ -9,68 +9,97 @@ public static class SeedData
     public static async Task SeedAsync(IServiceProvider services)
     {
         using var scope = services.CreateScope();
+
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        // ✅ Ensure DB + tables exist
         await db.Database.MigrateAsync();
 
-        // ✅ Roles
-        await EnsureRoleAsync(roleManager, "Citizen");
-        await EnsureRoleAsync(roleManager, "Staff");
+        // -------------------------
+        // Roles
+        // -------------------------
+        if (!await roleManager.RoleExistsAsync("Citizen"))
+            await roleManager.CreateAsync(new IdentityRole("Citizen"));
 
-        // ✅ Cities
+        if (!await roleManager.RoleExistsAsync("Staff"))
+            await roleManager.CreateAsync(new IdentityRole("Staff"));
+
+        if (!await roleManager.RoleExistsAsync("Admin"))
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+        // -------------------------
+        // Default Admin User
+        // -------------------------
+        var adminEmail = "admin@citycare.com";
+        var admin = await userManager.FindByEmailAsync(adminEmail);
+
+        if (admin == null)
+        {
+            admin = new User
+            {
+                FullName = "System Admin",
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var created = await userManager.CreateAsync(admin, "Admin@123");
+            if (created.Succeeded)
+            {
+                await userManager.AddToRoleAsync(admin, "Admin");
+            }
+        }
+
+        // -------------------------
+        // Cities
+        // -------------------------
         if (!await db.Cities.AnyAsync())
         {
             db.Cities.AddRange(
-                new City { Name = "Kandy", Code = "KDY" },
-                new City { Name = "Badulla", Code = "BDL" }
+                new City { Name = "Kandy", Code = "KDY", IsActive = true },
+                new City { Name = "Badulla", Code = "BDL", IsActive = true }
             );
             await db.SaveChangesAsync();
         }
 
-        // ✅ Departments
+        // -------------------------
+        // Departments
+        // -------------------------
         if (!await db.Departments.AnyAsync())
         {
             db.Departments.AddRange(
-                new Department { Name = "Water", Code = "WTR" },
-                new Department { Name = "Garbage", Code = "GRB" }
+                new Department { Name = "Water", Code = "WTR", IsActive = true },
+                new Department { Name = "Garbage", Code = "GRB", IsActive = true }
             );
             await db.SaveChangesAsync();
         }
 
-        // ✅ Staff Access Codes (manual structure)
+        // -------------------------
+        // Staff Access Codes (ALL combos)
+        // -------------------------
         if (!await db.StaffAccessCodes.AnyAsync())
         {
-            var kdy = await db.Cities.FirstAsync(x => x.Code == "KDY");
-            var wtr = await db.Departments.FirstAsync(x => x.Code == "WTR");
+            var year = DateTime.UtcNow.Year;
+            var cities = await db.Cities.Where(c => c.IsActive).ToListAsync();
+            var deps = await db.Departments.Where(d => d.IsActive).ToListAsync();
 
-            var code = $"CC-{kdy.Code}-{wtr.Code}-{DateTime.UtcNow.Year}";
-
-            db.StaffAccessCodes.Add(new StaffAccessCode
+            foreach (var c in cities)
             {
-                Code = code,
-                CityId = kdy.Id,
-                DepartmentId = wtr.Id,
-                Year = DateTime.UtcNow.Year,
-                IsActive = true,
-                StaffPhone = "+94XXXXXXXXX"
-            });
+                foreach (var d in deps)
+                {
+                    db.StaffAccessCodes.Add(new StaffAccessCode
+                    {
+                        Code = $"CC-{c.Code}-{d.Code}-{year}",
+                        CityId = c.Id,
+                        DepartmentId = d.Id,
+                        Year = year,
+                        IsActive = true
+                    });
+                }
+            }
 
             await db.SaveChangesAsync();
-        }
-    }
-
-    private static async Task EnsureRoleAsync(RoleManager<IdentityRole> roleManager, string roleName)
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            var result = await roleManager.CreateAsync(new IdentityRole(roleName));
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to create role '{roleName}': {errors}");
-            }
         }
     }
 }

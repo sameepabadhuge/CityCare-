@@ -1,0 +1,79 @@
+﻿@model List<CityCare.Models.Entities.StaffAccessCode>
+@{
+    ViewData["Title"] = "Staff Access Codes";
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Staff Access Codes</h3>
+        <a asp-action="CreateStaffCode" class="btn btn-primary">➕ Generate New Code</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>City</th>
+                            <th>Department</th>
+                            <th>Code</th>
+                            <th>Year</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.City?.Name</td>
+                                <td>@item.Department?.Name</td>
+                                <td>
+                                    <code>@item.Code</code>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary ms-2"
+                                            onclick="navigator.clipboard.writeText('@item.Code')">
+                                        📋 Copy
+                                    </button>
+                                </td>
+                                <td>@item.Year</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <form asp-action="ToggleCode" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Toggle</button>
+                                    </form>
+                                    <form asp-action="DeleteCode" method="post" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this code?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

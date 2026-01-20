@@ -34,7 +34,11 @@
             <div class="container-fluid">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    if (User.IsInRole("Staff"))
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand" asp-controller="Admin" asp-action="Dashboard">CityCare</a>
+                    }
+                    else if (User.IsInRole("Staff"))
                     {
                         <a class="navbar-brand" asp-controller="Staff" asp-action="Dashboard">CityCare</a>
                     }
@@ -58,7 +62,25 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            if (User.IsInRole("Staff"))
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Home</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                                        Admin
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Cities">Cities</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Departments">Departments</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="StaffCodes">Staff Codes</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            else if (User.IsInRole("Staff"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Staff" asp-action="Dashboard">Home</a>
@@ -69,8 +91,6 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Issue" asp-action="Dashboard">Home</a>
                                 </li>
-
-                                <!-- ✅ Only Citizen can see About -->
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
                                 </li>
@@ -86,12 +106,9 @@
                             <li class="nav-item me-3 position-relative">
                                 <a class="nav-link" asp-controller="Notification" asp-action="Index" title="Notifications">
                                     🔔
-                                    @if (unreadCount > 0)
-                                    {
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                            @unreadCount
-                                        </span>
-                                    }
+                                    <span id="notificationBadge" class="@(unreadCount > 0 ? "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" : "d-none")">
+                                        @unreadCount
+                                    </span>
                                 </a>
                             </li>
 
@@ -127,6 +144,28 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <script>
+            // Auto-refresh notification count every 10 seconds
+            setInterval(function() {
+                fetch('/Notification/GetUnreadCount')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('notificationBadge');
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.classList.remove('d-none');
+                            badge.classList.add('position-absolute', 'top-0', 'start-100', 'translate-middle', 'badge', 'rounded-pill', 'bg-danger');
+                        } else {
+                            badge.classList.add('d-none');
+                        }
+                    })
+                    .catch(error => console.error('Error fetching notification count:', error));
+            }, 10000); // Refresh every 10 seconds
+        </script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
