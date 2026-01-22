@@ -53,6 +53,10 @@ public class AppDbContext : IdentityDbContext<User>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Issue>()
+            .Property(x => x.ContactPhone)
+            .HasMaxLength(20);
+
+        builder.Entity<Issue>()
             .HasOne(x => x.Citizen).WithMany()
             .HasForeignKey(x => x.CitizenId)
             .OnDelete(DeleteBehavior.Restrict);

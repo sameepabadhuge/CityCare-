@@ -29,7 +29,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Category</label>
-                        <select asp-for="Category" class="form-select">
+                        <select asp-for="Category" class="form-select" id="Category">
                             <option value="">-- Select Category --</option>
                             @foreach (var c in ViewBag.Categories)
                             {
@@ -41,7 +41,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">City</label>
-                        <select asp-for="CityId" class="form-select">
+                        <select asp-for="CityId" class="form-select" id="CityId">
                             <option value="">-- Select City --</option>
                             @foreach (var city in ViewBag.Cities)
                             {
@@ -51,6 +51,12 @@
                         <small class="text-muted">Default is your registered city.</small>
                         <span asp-validation-for="CityId" class="text-danger"></span>
                     </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Department Mobile No</label>
+                    <input id="StaffPhone" class="form-control" readonly placeholder="Auto show after selecting category + city" />
+                    <small id="StaffPhoneHelp" class="text-muted"> </small>
                 </div>
 
                 <div class="mb-3">
@@ -78,4 +84,46 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const categoryEl = document.getElementById('Category');
+            const cityEl = document.getElementById('CityId');
+            const phoneEl = document.getElementById('StaffPhone');
+            const helpEl = document.getElementById('StaffPhoneHelp');
+
+            async function loadPhone() {
+                const category = categoryEl?.value;
+                const cityId = cityEl?.value;
+
+                phoneEl.value = '';
+                helpEl.textContent = '';
+
+                if (!category || !cityId) {
+                    return;
+                }
+
+                try {
+                    const url = `@Url.Action("LookupStaffPhone", "Issue")?category=${encodeURIComponent(category)}&cityId=${encodeURIComponent(cityId)}`;
+                    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) return;
+
+                    const data = await res.json();
+                    if (data && data.staffPhone) {
+                        phoneEl.value = data.staffPhone;
+                    } else {
+                        helpEl.textContent = 'No contact number available for this selection.';
+                    }
+                } catch {
+                    helpEl.textContent = 'Unable to load contact number.';
+                }
+            }
+
+            categoryEl?.addEventListener('change', loadPhone);
+            cityEl?.addEventListener('change', loadPhone);
+
+            // initial (default city)
+            loadPhone();
+        })();
+    </script>
 }

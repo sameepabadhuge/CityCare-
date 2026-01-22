@@ -16,3 +16,9 @@ Thumbs.db
 
 # Secrets
 appsettings.Development.json
+
+# Uploaded files (do not commit)
+CityCare/wwwroot/uploads/
+wwwroot/uploads/
+
+

@@ -99,6 +99,37 @@ public class IssueController : Controller
             CreatedAt = DateTime.UtcNow
         };
 
+        // snapshot contact phone (based on staff users)
+        var deptForPhone = await _db.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == vm.Category.Trim().ToLower());
+
+        if (deptForPhone != null)
+        {
+            var staffRoleId = await _db.Roles
+                .AsNoTracking()
+                .Where(r => r.NormalizedName == "STAFF")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (!string.IsNullOrEmpty(staffRoleId))
+            {
+                var phone = await _db.Users
+                    .AsNoTracking()
+                    .Where(u => u.CityId == issue.CityId && u.DepartmentId == deptForPhone.Id)
+                    .Join(_db.UserRoles.AsNoTracking().Where(ur => ur.RoleId == staffRoleId),
+                        u => u.Id,
+                        ur => ur.UserId,
+                        (u, ur) => u)
+                    .Where(u => !string.IsNullOrEmpty(u.PhoneNumber))
+                    .OrderBy(u => u.CreatedAt)
+                    .Select(u => u.PhoneNumber)
+                    .FirstOrDefaultAsync();
+
+                issue.ContactPhone = string.IsNullOrWhiteSpace(phone) ? null : phone;
+            }
+        }
+
         _db.Issues.Add(issue);
         await _db.SaveChangesAsync();
 
@@ -305,6 +336,47 @@ public class IssueController : Controller
 
         TempData["Success"] = "Thank you! Your rating was submitted.";
         return RedirectToAction(nameof(Details), new { id = vm.IssueId });
+    }
+
+    // -----------------------------
+    // LOOKUP STAFF PHONE (GET)
+    // -----------------------------
+    [HttpGet]
+    public async Task<IActionResult> LookupStaffPhone(string? category, int cityId)
+    {
+        if (string.IsNullOrWhiteSpace(category) || cityId <= 0)
+            return Json(new LookupStaffPhoneResponse { staffPhone = null });
+
+        var dept = await _db.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == category.Trim().ToLower());
+
+        if (dept == null)
+            return Json(new LookupStaffPhoneResponse { staffPhone = null });
+
+        // Only Staff role users
+        var staffRoleId = await _db.Roles
+            .AsNoTracking()
+            .Where(r => r.NormalizedName == "STAFF")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrEmpty(staffRoleId))
+            return Json(new LookupStaffPhoneResponse { staffPhone = null });
+
+        var phone = await _db.Users
+            .AsNoTracking()
+            .Where(u => u.CityId == cityId && u.DepartmentId == dept.Id)
+            .Join(_db.UserRoles.AsNoTracking().Where(ur => ur.RoleId == staffRoleId),
+                u => u.Id,
+                ur => ur.UserId,
+                (u, ur) => u)
+            .Where(u => !string.IsNullOrEmpty(u.PhoneNumber))
+            .OrderBy(u => u.CreatedAt)
+            .Select(u => u.PhoneNumber)
+            .FirstOrDefaultAsync();
+
+        return Json(new LookupStaffPhoneResponse { staffPhone = string.IsNullOrWhiteSpace(phone) ? null : phone });
     }
 
     // -----------------------------

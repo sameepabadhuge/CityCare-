@@ -40,6 +40,7 @@
                                 <th>Title</th>
                                 <th>Category</th>
                                 <th>City</th>
+                                <th>Contact No</th>
                                 <th>Status</th>
                                 <th>Created</th>
                                 <th class="text-end">Action</th>
@@ -56,6 +57,16 @@
                                     <td>@item.Title</td>
                                     <td>@item.Category</td>
                                     <td>@item.City?.Name</td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(item.ContactPhone))
+                                        {
+                                            <a href="tel:@item.ContactPhone">@item.ContactPhone</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
                                     <td>
                                         <span class="badge bg-secondary">@item.Status</span>
                                     </td>
