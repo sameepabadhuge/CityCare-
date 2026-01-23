@@ -13,4 +13,7 @@ public class CreateStaffCodeViewModel
     [Required]
     [Range(2020, 2100)]
     public int Year { get; set; }
+
+    [MaxLength(20)]
+    public string? StaffPhone { get; set; }
 }

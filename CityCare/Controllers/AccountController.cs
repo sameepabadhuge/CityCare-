@@ -184,6 +184,7 @@ public class AccountController : Controller
             FullName = vm.FullName,
             UserName = vm.Email,
             Email = vm.Email,
+            PhoneNumber = vm.PhoneNumber,
             Address = null,
             CityId = vm.CityId,
             DepartmentId = vm.DepartmentId

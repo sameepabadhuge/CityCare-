@@ -25,6 +25,9 @@ public class Issue
     [Required, MaxLength(200)]
     public string LocationText { get; set; } = "";
 
+    [MaxLength(20)]
+    public string? ContactPhone { get; set; }
+
     // map pin (optional for later google maps)
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }

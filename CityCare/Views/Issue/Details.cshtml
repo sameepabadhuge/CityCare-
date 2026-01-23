@@ -58,6 +58,20 @@
                     <div class="fw-semibold">@issue.City?.Name</div>
                 </div>
 
+                <div class="col-md-6">
+                    <div class="small text-muted">Contact No</div>
+                    <div class="fw-semibold">
+                        @if (!string.IsNullOrWhiteSpace(issue.ContactPhone))
+                        {
+                            <a href="tel:@issue.ContactPhone">@issue.ContactPhone</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </div>
+                </div>
+
                 <div class="col-12">
                     <div class="small text-muted">Location</div>
                     <div class="fw-semibold">@issue.LocationText</div>

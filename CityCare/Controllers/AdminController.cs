@@ -262,7 +262,8 @@ public class AdminController : Controller
             CityId = vm.CityId,
             DepartmentId = vm.DepartmentId,
             Year = vm.Year,
-            IsActive = true
+            IsActive = true,
+            StaffPhone = string.IsNullOrWhiteSpace(vm.StaffPhone) ? null : vm.StaffPhone.Trim()
         });
 
         await _db.SaveChangesAsync();
