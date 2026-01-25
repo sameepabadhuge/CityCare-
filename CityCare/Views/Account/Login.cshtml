@@ -2,10 +2,11 @@
 @{
     ViewData["Title"] = "Login";
     Layout = "_PublicLayout";
+    ViewData["BodyClass"] = "public-layout";
 }
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
-    <div class="card shadow-sm" style="width:420px;">
+<div class="auth-page d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm auth-card" style="width:420px;">
         <div class="card-body p-4">
             <h4 class="text-center mb-4">CityCare Login</h4>
 
@@ -30,7 +31,7 @@
                     <label class="form-check-label">Remember me</label>
                 </div>
 
-                <button class="btn btn-primary w-100">Login</button>
+                <button class="btn btn-light text-primary fw-semibold w-100">Login</button>
             </form>
 
             <div class="text-center mt-3">

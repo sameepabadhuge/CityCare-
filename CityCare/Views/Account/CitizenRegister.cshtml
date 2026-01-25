@@ -2,10 +2,11 @@
 @{
     ViewData["Title"] = "Citizen Registration";
     Layout = "_PublicLayout";
+    ViewData["BodyClass"] = "public-layout";
 }
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height:85vh;">
-    <div class="card shadow-sm" style="width:520px;">
+<div class="auth-page d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm auth-card" style="width:520px;">
         <div class="card-body p-4">
             <h4 class="text-center mb-4">Citizen Registration</h4>
 
@@ -57,7 +58,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary w-100">Register</button>
+                <button class="btn btn-light text-primary fw-semibold w-100">Register</button>
             </form>
 
             <div class="text-center mt-3">

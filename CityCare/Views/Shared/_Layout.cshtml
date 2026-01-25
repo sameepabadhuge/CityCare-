@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
 </head>
 
-<body>
+<body class="app-shell">
     @{
         int unreadCount = 0;
 
@@ -30,28 +30,28 @@
     }
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light brand-gradient-bg border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     @if (User.IsInRole("Admin"))
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Admin" asp-action="Dashboard">
-                            <img src="~/images/logo.png" alt="CityCare Logo" style="height: 60px;" />
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
                             <span>CityCare</span>
                         </a>
                     }
                     else if (User.IsInRole("Staff"))
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Staff" asp-action="Dashboard">
-                            <img src="~/images/logo.png" alt="CityCare Logo" style="height: 60px;" />
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
                             <span>CityCare</span>
                         </a>
                     }
                     else
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Issue" asp-action="Dashboard">
-                            <img src="~/images/logo.png" alt="CityCare Logo" style="height: 60px;" />
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
                             <span>CityCare</span>
                         </a>
                     }
@@ -59,7 +59,7 @@
                 else
                 {
                     <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
-                        <img src="~/images/logo.png" alt="CityCare Logo" style="height: 60px;" />
+                        <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
                         <span>CityCare</span>
                     </a>
                 }
@@ -77,10 +77,10 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Home</a>
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Home</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                         Admin
                                     </a>
                                     <ul class="dropdown-menu">
@@ -95,16 +95,16 @@
                             else if (User.IsInRole("Staff"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Staff" asp-action="Dashboard">Home</a>
+                                    <a class="nav-link" asp-controller="Staff" asp-action="Dashboard">Home</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Issue" asp-action="Dashboard">Home</a>
+                                    <a class="nav-link" asp-controller="Issue" asp-action="Dashboard">Home</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
+                                    <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
                                 </li>
                             }
                         }
@@ -147,11 +147,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - CityCare
-        </div>
-    </footer>
+    <footer class="border-top footer text-muted soft-gray-footer">
+        <div class="container footer-content">
+             &copy; 2026 - CityCare
+         </div>
+     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -10,14 +10,20 @@
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
 </head>
 
-<body>
+@{
+    var extraBodyClass = ViewData["BodyClass"] as string;
+    var bodyClass = string.IsNullOrWhiteSpace(extraBodyClass)
+        ? "app-shell"
+        : $"app-shell {extraBodyClass}";
+}
+<body class="@bodyClass">
     <!-- ✅ Public Navbar (only logo + name) -->
     <header>
-        <nav class="navbar navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-light brand-gradient-bg border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center gap-2"
                    asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logo.png" alt="CityCare Logo" style="height: 60px;" />
+                    <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
                     <strong>CityCare</strong>
                 </a>
 
@@ -40,11 +46,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - CityCare
-        </div>
-    </footer>
+    <footer class="border-top footer text-muted brand-gradient-footer">
+        <div class="container footer-content">
+             &copy; 2026 - CityCare
+         </div>
+     </footer>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

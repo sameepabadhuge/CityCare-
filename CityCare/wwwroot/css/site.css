@@ -18,5 +18,87 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin: 0;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+body.public-layout {
+  background: radial-gradient(circle at 20% 20%, #53a4ff 0%, #1f66ff 35%, #09307a 85%);
+  color: #f6fbff;
+}
+
+body.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.app-shell > header {
+  flex-shrink: 0;
+}
+
+body.app-shell > .container {
+  flex: 1 0 auto;
+}
+
+body.app-shell > footer {
+  flex-shrink: 0;
+}
+
+body.app-shell main {
+  min-height: 100%;
+}
+
+.soft-gray-bg {
+  background-color: #e0e5ef !important;
+  color: #1f2937;
+}
+
+.soft-gray-footer {
+  background-color: #d4dae4;
+  color: #1f2937;
+}
+
+.brand-gradient-bg {
+  background: linear-gradient(90deg, #0b45c9 0%, #1f66ff 50%, #0a328d 100%) !important;
+  color: #f2f6ff;
+}
+
+.brand-gradient-footer {
+  background: linear-gradient(90deg, #0a3dac 0%, #0f5ed5 60%, #0c378f 100%);
+  color: #f2f6ff;
+}
+
+.footer {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+  margin-top: auto;
+  background: transparent;
+}
+
+.footer .footer-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-gradient-bg .navbar-brand span,
+.brand-gradient-bg .navbar-brand,
+.brand-gradient-bg .nav-link,
+.brand-gradient-bg .navbar-toggler,
+.brand-gradient-bg .navbar-toggler-icon {
+  color: #f2f6ff !important;
+}
+
+.brand-gradient-bg .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.brand-gradient-bg .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }

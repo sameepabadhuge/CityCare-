@@ -1,0 +1,94 @@
+:root {
+    --citycare-sky: #1b76c4;
+    --citycare-sky-dark: #0f4f91;
+    --citycare-sky-light: #9cdfff;
+}
+
+body.public-layout main {
+    padding-bottom: 3rem;
+}
+
+.landing-hero {
+    color: #fff;
+    padding: 60px 0;
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    background: transparent;
+}
+
+.landing-hero h1 {
+    line-height: 1.15;
+    font-weight: 700;
+}
+
+.landing-hero .hero-highlight {
+    color: var(--citycare-sky-light);
+}
+
+.landing-hero p {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 520px;
+}
+
+.landing-hero .btn-hero {
+    background-color: #fff;
+    color: var(--citycare-sky-dark);
+    border: none;
+    font-weight: 600;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.landing-hero .btn-hero:hover {
+    background-color: #e9f5ff;
+    color: #0c3f6d;
+}
+
+.auth-page {
+    min-height: calc(100vh - 220px);
+    padding: 40px 0 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card {
+    background-color: #1f73c9;
+    color: #fff;
+    border: none;
+}
+
+.auth-card h4,
+.auth-card label,
+.auth-card .form-label,
+.auth-card .form-check-label,
+.auth-card small,
+.auth-card a {
+    color: #fff;
+}
+
+.auth-card a {
+    text-decoration: underline;
+}
+
+.auth-card .form-control,
+.auth-card .form-select,
+.auth-card textarea {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.auth-card .form-control::placeholder,
+.auth-card textarea::placeholder {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.auth-card .form-control:focus,
+.auth-card .form-select:focus,
+.auth-card textarea:focus {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: #fff;
+    box-shadow: 0 0 0 0.1rem rgba(255, 255, 255, 0.4);
+}
+
