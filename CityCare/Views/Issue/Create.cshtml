@@ -3,78 +3,97 @@
     ViewData["Title"] = "Report New Issue";
 }
 
-<div class="container py-4" style="max-width: 800px;">
-    <h3 class="mb-3">Report New Issue</h3>
+<div class="container py-4" style="max-width: 720px;">
+    
+    <div class="mb-4 text-center">
+        <h2 class="fw-bold mb-1">Report an Issue</h2>
+        <p class="text-muted">Help us improve the city by reporting problems you see.</p>
+    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <!-- Updated background to light cream color from screenshot -->
+    <div class="card shadow-sm border-0" style="background-color: #FAF7F0;">
+        <div class="card-body p-4 p-lg-5">
 
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                    </div>
+                }
 
-                <div class="mb-3">
-                    <label class="form-label">Title</label>
-                    <input asp-for="Title" class="form-control" placeholder="Example: Water leak near road" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
+                <h5 class="mb-3 text-secondary border-bottom pb-2">Issue Details</h5>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Title</label>
+                    <input asp-for="Title" class="form-control form-control-lg" placeholder="Briefly summarize the issue..." />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea asp-for="Description" class="form-control" rows="4"
-                              placeholder="Explain the issue clearly..."></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Category</label>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Category</label>
                         <select asp-for="Category" class="form-select" id="Category">
-                            <option value="">-- Select Category --</option>
+                            <option value="">Select Category...</option>
                             @foreach (var c in ViewBag.Categories)
                             {
                                 <option value="@c.Value">@c.Text</option>
                             }
                         </select>
-                        <span asp-validation-for="Category" class="text-danger"></span>
+                        <span asp-validation-for="Category" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">City</label>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">City</label>
                         <select asp-for="CityId" class="form-select" id="CityId">
-                            <option value="">-- Select City --</option>
+                            <option value="">Select City...</option>
                             @foreach (var city in ViewBag.Cities)
                             {
                                 <option value="@city.Id">@city.Name</option>
                             }
                         </select>
-                        <small class="text-muted">Default is your registered city.</small>
-                        <span asp-validation-for="CityId" class="text-danger"></span>
+                        <span asp-validation-for="CityId" class="text-danger small"></span>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Department Mobile No</label>
-                    <input id="StaffPhone" class="form-control" readonly placeholder="Auto show after selecting category + city" />
-                    <small id="StaffPhoneHelp" class="text-muted"> </small>
+                <div class="mb-4 p-3 bg-light rounded border d-flex align-items-center" id="contactInfoBox" style="display:none;">
+                    <div class="flex-grow-1">
+                        <label class="small text-muted mb-1 d-block">Department Contact</label>
+                        <div class="fw-bold" id="StaffPhoneDisplay">—</div>
+                        <input type="hidden" id="StaffPhone" /> <!-- Hidden as we show it nicely above -->
+                    </div>
+                    <small id="StaffPhoneHelp" class="text-muted ms-2"></small>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Location (Village / Address)</label>
-                    <input asp-for="LocationText" class="form-control" placeholder="Example: Mahaweli Road, Peradeniya" />
-                    <span asp-validation-for="LocationText" class="text-danger"></span>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Location</label>
+                    <input asp-for="LocationText" class="form-control" placeholder="Village, Street, or Landmark..." />
+                    <div class="form-text">Be as specific as possible to help us locate the issue.</div>
+                    <span asp-validation-for="LocationText" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Upload Image (optional)</label>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="5"
+                              placeholder="Describe the issue in detail. What is wrong? How does it affect the area?"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <h5 class="mt-5 mb-3 text-secondary border-bottom pb-2">Attachments</h5>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Photo Evidence</label>
                     <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
-                    <span asp-validation-for="ImageFile" class="text-danger"></span>
-                    <small class="text-muted">Allowed: JPG, PNG, WEBP</small>
+                    <div class="form-text">Supporting images help us prioritize and resolve issues faster. (JPG, PNG, WEBP)</div>
+                    <span asp-validation-for="ImageFile" class="text-danger small"></span>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button class="btn btn-primary">Submit Complaint</button>
-                    <a class="btn btn-outline-secondary" asp-action="Dashboard">Cancel</a>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+                    <a class="btn btn-light px-4" asp-action="Dashboard">Cancel</a>
+                    <!-- Changed button class to custom style matching navbar -->
+                    <button class="btn btn-primary px-5 fw-semibold shadow-sm">Submit Report</button>
                 </div>
             </form>
 
@@ -89,40 +108,57 @@
         (function () {
             const categoryEl = document.getElementById('Category');
             const cityEl = document.getElementById('CityId');
-            const phoneEl = document.getElementById('StaffPhone');
+            const phoneDisplayEl = document.getElementById('StaffPhoneDisplay');
             const helpEl = document.getElementById('StaffPhoneHelp');
+            const contactBox = document.getElementById('contactInfoBox');
 
             async function loadPhone() {
                 const category = categoryEl?.value;
                 const cityId = cityEl?.value;
 
-                phoneEl.value = '';
+                phoneDisplayEl.textContent = '—';
                 helpEl.textContent = '';
+                
+                // Only show box if something is selected, or always show it? 
+                // Let's keep it visible so they know contact info appears here.
 
                 if (!category || !cityId) {
+                    phoneDisplayEl.textContent = 'Select Category & City to see contact';
                     return;
                 }
+
+                phoneDisplayEl.textContent = 'Loading...';
 
                 try {
                     const url = `@Url.Action("LookupStaffPhone", "Issue")?category=${encodeURIComponent(category)}&cityId=${encodeURIComponent(cityId)}`;
                     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                    if (!res.ok) return;
+                    
+                    if (!res.ok) {
+                         phoneDisplayEl.textContent = 'Unavailable';
+                         return;
+                    }
 
                     const data = await res.json();
                     if (data && data.staffPhone) {
-                        phoneEl.value = data.staffPhone;
+                        phoneDisplayEl.textContent = data.staffPhone;
+                        helpEl.innerHTML = '<span class="badge bg-success">Available</span>';
                     } else {
-                        helpEl.textContent = 'No contact number available for this selection.';
+                        phoneDisplayEl.textContent = 'Not Available';
+                        helpEl.textContent = 'No contact number listed.';
                     }
                 } catch {
-                    helpEl.textContent = 'Unable to load contact number.';
+                    phoneDisplayEl.textContent = 'Error';
+                    helpEl.textContent = '';
                 }
             }
 
             categoryEl?.addEventListener('change', loadPhone);
             cityEl?.addEventListener('change', loadPhone);
 
-            // initial (default city)
+            // contactBox.style.display = 'block'; // Make sure it's visible if using js
+            if(contactBox) contactBox.style.display = 'flex'; // Ensure flex since we used d-flex class but inline style might override
+
+            // initial
             loadPhone();
         })();
     </script>

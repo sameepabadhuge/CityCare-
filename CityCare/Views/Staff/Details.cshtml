@@ -5,94 +5,199 @@
     ViewData["Title"] = "Complaint Details";
     var issue = Model.Issue;
 
-    string badgeClass = issue.Status switch
+    // Badge styling for status
+    string statusBadgeClass = issue.Status switch
     {
-        IssueStatus.Pending => "bg-warning text-dark",
-        IssueStatus.InProgress => "bg-info text-dark",
+        IssueStatus.Pending => "bg-danger",
+        IssueStatus.InProgress => "bg-primary",
         IssueStatus.Resolved => "bg-success",
         _ => "bg-secondary"
     };
 }
 
-<div class="container py-4" style="max-width: 900px;">
+<div class="container py-4">
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4">
+             <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="d-flex justify-content-between mb-3">
-        <h3>Complaint Details</h3>
-        <a class="btn btn-outline-secondary" asp-action="Dashboard">Back</a>
-    </div>
-
-    <div class="card shadow-sm mb-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h5>@issue.Title</h5>
-                    <div class="text-muted small">
-                        Citizen: @issue.Citizen?.FullName
-                    </div>
-                </div>
-                <span class="badge @badgeClass px-3 py-2">@issue.Status</span>
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="fw-bold mb-0 text-dark">Complaint Overview</h2>
+                <span class="badge rounded-pill @statusBadgeClass px-3 small">@issue.Status</span>
             </div>
-
-            <hr />
-
-            <p><strong>Category:</strong> @issue.Category</p>
-            <p><strong>City:</strong> @issue.City?.Name</p>
-            <p><strong>Location:</strong> @issue.LocationText</p>
-            <p><strong>Description:</strong><br />@issue.Description</p>
+            <div class="text-muted">
+                Reference ID: <span class="fw-medium text-dark">#@issue.Id</span> &bull; 
+                Reported <span class="fw-medium text-dark">@issue.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy 'at' h:mm tt")</span>
+            </div>
+        </div>
+        <div>
+             <a class="btn btn-outline-secondary px-3 fw-medium" asp-action="Dashboard">
+                 <i class="bi bi-arrow-left me-1"></i> Back to List
+             </a>
         </div>
     </div>
 
-    <div class="card shadow-sm mb-3">
-        <div class="card-body">
-            <h6>Images</h6>
+    <div class="row g-4">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            
+            <!-- Details Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 px-4 border-bottom">
+                      <h5 class="mb-0 fw-bold text-secondary text-uppercase small ls-1">Issue Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <h4 class="mb-4 text-primary fw-bold">@issue.Title</h4>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-bold text-uppercase mb-1">Category</label>
+                            <div>
+                                <span class="badge bg-light text-dark border px-3 py-2">@issue.Category</span>
+                            </div>
+                        </div>
+                         <div class="col-md-6">
+                            <label class="text-muted small fw-bold text-uppercase mb-1">City</label>
+                            <div class="fw-bold text-dark fs-5">@issue.City?.Name</div>
+                        </div>
+                         <div class="col-12">
+                             <label class="text-muted small fw-bold text-uppercase mb-1">Location</label>
+                             <div class="d-flex align-items-start gap-2 bg-light p-3 rounded border">
+                                 <i class="bi bi-geo-alt-fill text-danger mt-1"></i>
+                                 <span class="fw-medium text-dark">@issue.LocationText</span>
+                             </div>
+                        </div>
+                    </div>
 
-            @if (issue.Images == null || !issue.Images.Any())
-            {
-                <p class="text-muted">No images uploaded.</p>
-            }
-            else
-            {
-                <div class="row g-3">
-                    @foreach (var img in issue.Images)
+                    <div class="pt-3 border-top">
+                        <label class="text-muted small fw-bold text-uppercase mb-2">Description</label>
+                        <div class="bg-light p-3 rounded border">
+                             <p class="mb-0 text-secondary" style="white-space: pre-wrap; line-height: 1.6;">@issue.Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images Card -->
+            <div class="card shadow-sm border-0">
+                 <div class="card-header bg-white py-3 px-4 border-bottom">
+                      <h5 class="mb-0 fw-bold text-secondary text-uppercase small ls-1">Evidence Images</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (issue.Images == null || !issue.Images.Any(i => !string.IsNullOrWhiteSpace(i.ImageUrl)))
                     {
-                        <div class="col-md-4">
-                            <a href="@img.ImageUrl" target="_blank">
-                                <img src="@img.ImageUrl" class="img-fluid rounded border" />
-                            </a>
+                        <div class="text-center py-5 text-muted border border-dashed rounded bg-light">
+                             <i class="bi bi-image fs-1 mb-2 opacity-25 d-block"></i>
+                             <span>No photo evidence uploaded.</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row g-3">
+                            @foreach (var img in issue.Images.Where(i => !string.IsNullOrWhiteSpace(i.ImageUrl)))
+                            {
+                                 var modalId = $"imgModal_{img.Id}";
+                                <div class="col-6 col-md-4">
+                                     <button type="button" class="btn p-0 w-100 shadow-sm position-relative rounded overflow-hidden" 
+                                             data-bs-toggle="modal" data-bs-target="#@modalId">
+                                        <div class="ratio ratio-1x1">
+                                            <img src="@img.ImageUrl" class="object-fit-cover w-100 h-100" alt="Evidence" />
+                                        </div>
+                                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-25 hover-overlay opacity-0 transition-opacity">
+                                            <i class="bi bi-zoom-in text-white fs-4"></i>
+                                        </div>
+                                    </button>
+
+                                      <!-- Modal -->
+                                     <div class="modal fade" id="@modalId" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content bg-transparent border-0 shadow-lg">
+                                                <div class="modal-header border-0 p-0">
+                                                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3 bg-dark rounded-circle p-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body p-0 text-center">
+                                                    <img src="@img.ImageUrl" class="img-fluid rounded shadow-lg" style="max-height: 85vh;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     }
                 </div>
-            }
+            </div>
         </div>
-    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h6>Update Status</h6>
-
-            <form asp-action="UpdateStatus" method="post">
-                @Html.AntiForgeryToken()
-
-                <input type="hidden" asp-for="Issue.Id" />
-
-                <div class="mb-3">
-                    <select asp-for="NewStatus" class="form-select">
-                        <option value="@IssueStatus.Pending">Pending</option>
-                        <option value="@IssueStatus.InProgress">In Progress</option>
-                        <option value="@IssueStatus.Resolved">Resolved</option>
-                    </select>
+        <!-- Sidebar / Action Column -->
+        <div class="col-lg-4">
+             <!-- Status Action Card -->
+             <div class="card shadow border-0 mb-4 bg-white sticky-top" style="top: 2rem; z-index: 10;">
+                <div class="card-header text-white py-3 px-4" style="background-color: #eab308;">
+                     <h5 class="mb-0 fw-bold small text-uppercase ls-1">Action Required</h5>
                 </div>
+                <div class="card-body p-4">
+                    <form asp-action="UpdateStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Issue.Id" />
 
-                <button class="btn btn-primary">Update Status</button>
-            </form>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-dark mb-2">UPDATE STATUS</label>
+                            <select asp-for="NewStatus" class="form-select form-select-lg border-2 shadow-none focus-ring-warning">
+                                <option value="@IssueStatus.Pending">Pending</option>
+                                <option value="@IssueStatus.InProgress">In Progress</option>
+                                <option value="@IssueStatus.Resolved">Resolved</option>
+                            </select>
+                            <div class="form-text small mt-2">Change status to notify the citizen.</div>
+                        </div>
+
+                        <div class="d-grid">
+                             <button class="btn fw-bold py-2 shadow-sm text-white" style="background-color: #eab308; border-color: #eab308;">
+                                 <i class="bi bi-check2-circle me-1"></i> Save Changes
+                             </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+             <!-- Reporter Info Card -->
+             <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3 text-secondary text-uppercase small ls-1">Reporter Information</h6>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-person-fill fs-4 text-secondary"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">@issue.Citizen?.FullName</div>
+                            <div class="small text-muted">Citizen</div>
+                            <div class="small text-muted text-break">@issue.Citizen?.Email</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-telephone text-muted"></i>
+                            <span class="small fw-medium">@(string.IsNullOrWhiteSpace(issue.ContactPhone) ? "Not Provided" : issue.ContactPhone)</span>
+                        </div>
+                        <a href="mailto:@issue.Citizen?.Email" class="btn btn-outline-secondary btn-sm w-100 rounded-pill">Contact Citizen</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .ls-1 { letter-spacing: 1px; }
+    .ratio-1x1 { --bs-aspect-ratio: 100%; }
+    .hover-overlay:hover { opacity: 1 !important; }
+    .transition-opacity { transition: opacity 0.2s ease-in-out; }
+</style>

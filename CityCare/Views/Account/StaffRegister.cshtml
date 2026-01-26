@@ -5,82 +5,94 @@
     ViewData["BodyClass"] = "public-layout";
 }
 
-<div class="auth-page d-flex justify-content-center align-items-center">
-    <div class="card shadow-sm auth-card" style="width:520px;">
-        <div class="card-body p-4">
-            <h4 class="text-center mb-4">Staff Registration</h4>
+<div class="auth-page d-flex min-vh-100 flex-column justify-content-center align-items-center py-5">
+    
+    <div class="text-center mb-4">
+        <h1 class="text-white fw-bold">Staff Portal</h1>
+        <p class="text-white-50 fs-5">Register as a department staff member</p>
+    </div>
+
+    <div class="card shadow-lg border-0 auth-card" style="width: 100%; max-width: 600px; border-radius: 1rem;">
+        <div class="card-body p-4 p-md-5">
 
             <form asp-action="StaffRegister" method="post">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
 
-                <div class="mb-3">
-                    <label class="form-label">Full Name</label>
-                    <input asp-for="FullName" class="form-control" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Mobile No</label>
-                    <input asp-for="PhoneNumber" class="form-control" placeholder="e.g., 0771234567" />
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">City</label>
-                    <select asp-for="CityId" class="form-select">
-                        <option value="">-- Select City --</option>
-                        @foreach (var city in ViewBag.Cities)
-                        {
-                            <option value="@city.Id">@city.Name</option>
-                        }
-                    </select>
-                    <span asp-validation-for="CityId" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Department</label>
-                    <select asp-for="DepartmentId" class="form-select">
-                        <option value="">-- Select Department --</option>
-                        @foreach (var dep in ViewBag.Departments)
-                        {
-                            <option value="@dep.Id">@dep.Name</option>
-                        }
-                    </select>
-                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Staff Access Code</label>
-                    <input asp-for="StaffAccessCode" class="form-control" placeholder="CC-KDY-WTR-2026" />
-                    <span asp-validation-for="StaffAccessCode" class="text-danger"></span>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Password</label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">FULL NAME</label>
+                        <input asp-for="FullName" class="form-control bg-light border-0" placeholder="John Doe" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">MOBILE NO</label>
+                        <input asp-for="PhoneNumber" class="form-control bg-light border-0" placeholder="077xxxxxxx" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-bold">EMAIL ADDRESS</label>
+                        <input asp-for="Email" class="form-control bg-light border-0" placeholder="name@dept.gov.lk" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">CITY</label>
+                        <select asp-for="CityId" class="form-select bg-light border-0">
+                            <option value="">Select City...</option>
+                            @foreach (var city in ViewBag.Cities)
+                            {
+                                <option value="@city.Id">@city.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CityId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">DEPARTMENT</label>
+                        <select asp-for="DepartmentId" class="form-select bg-light border-0">
+                            <option value="">Select Department...</option>
+                            @foreach (var dep in ViewBag.Departments)
+                            {
+                                <option value="@dep.Id">@dep.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-bold">ACCESS CODE</label>
+                        <div class="input-group">
+                             <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-key"></i></span>
+                             <input asp-for="StaffAccessCode" class="form-control bg-light border-0" placeholder="Enter provided staff code" />
+                        </div>
+                        <div class="form-text small">This code is required to verify your staff status.</div>
+                        <span asp-validation-for="StaffAccessCode" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">PASSWORD</label>
+                        <input asp-for="Password" class="form-control bg-light border-0" type="password" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">CONFIRM PASSWORD</label>
+                        <input asp-for="ConfirmPassword" class="form-control bg-light border-0" type="password" placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                     </div>
                 </div>
 
-                <button class="btn btn-light text-primary fw-semibold w-100">Register</button>
+                <div class="mt-4 pt-2">
+                    <button class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">Complete Registration</button>
+                </div>
             </form>
 
-            <div class="text-center mt-3">
-                <small>Already have an account? <a asp-action="Login">Login</a></small>
+            <div class="text-center mt-4 pt-3 border-top">
+                <span class="text-muted small">Already have an account?</span>
+                <a asp-action="Login" class="text-decoration-none fw-semibold ms-1">Log in</a>
             </div>
         </div>
     </div>

@@ -3,40 +3,48 @@
     ViewData["Title"] = "Notifications";
 }
 
-<div class="container py-4" style="max-width:900px;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Notifications</h3>
-
-        <form asp-action="MarkAllRead" method="post">
-            @Html.AntiForgeryToken()
-            <button class="btn btn-outline-secondary btn-sm">Mark all as read</button>
-        </form>
+<div class="container py-4" style="max-width:800px;">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">Notifications</h3>
+        
+        @if (Model.Any(n => !n.IsRead))
+        {
+            <form asp-action="MarkAllRead" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-check-all me-1"></i> Mark all as read
+                </button>
+            </form>
+        }
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
             @if (!Model.Any())
             {
-                <p class="text-muted mb-0">No notifications yet.</p>
+                <div class="text-center py-5">
+                    <div class="text-muted mb-3" style="font-size: 2.5rem;">🔔</div>
+                    <p class="text-muted fw-medium fs-5">You're all caught up!</p>
+                    <p class="text-muted small">No new notifications to display.</p>
+                </div>
             }
             else
             {
-                <div class="list-group">
+                <div class="list-group list-group-flush">
                     @foreach (var n in Model)
                     {
-                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
+                        var itemClass = n.IsRead ? "bg-white" : "bg-light";
+                        <a class="list-group-item list-group-item-action p-4 border-bottom @itemClass"
                            asp-action="Open" asp-route-id="@n.Id">
-                            <div>
-                                <div class="fw-semibold">
-                                    @if (!n.IsRead)
-                                    {
-                                        <span class="badge bg-primary me-2">New</span>
-                                    }
+                            <div class="d-flex w-100 justify-content-between mb-1">
+                                <h6 class="mb-1 fw-bold @(n.IsRead ? "text-dark" : "text-primary")">
+                                    @if (!n.IsRead) { <span class="badge bg-primary me-2 rounded-pill small" style="font-size: 0.65em; vertical-align: text-top;">NEW</span> }
                                     @n.Title
-                                </div>
-                                <div class="text-muted small">@n.Message</div>
-                                <div class="text-muted small">@n.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div>
+                                </h6>
+                                <small class="text-muted">@n.CreatedAt.ToLocalTime().ToString("MMM dd, HH:mm")</small>
                             </div>
+                            <p class="mb-1 text-secondary text-break" style="max-width: 90%;">@n.Message</p>
                         </a>
                     }
                 </div>

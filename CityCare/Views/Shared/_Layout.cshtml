@@ -9,6 +9,7 @@
     <title>@ViewData["Title"] - CityCare</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CityCare.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
@@ -30,28 +31,28 @@
     }
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light brand-gradient-bg border-bottom box-shadow mb-3">
-            <div class="container-fluid">
+        <nav class="navbar navbar-expand-sm navbar-light brand-gradient-bg">
+            <div class="container">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     @if (User.IsInRole("Admin"))
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Admin" asp-action="Dashboard">
-                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 44px; width: auto;" />
                             <span>CityCare</span>
                         </a>
                     }
                     else if (User.IsInRole("Staff"))
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Staff" asp-action="Dashboard">
-                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 44px; width: auto;" />
                             <span>CityCare</span>
                         </a>
                     }
                     else
                     {
                         <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Issue" asp-action="Dashboard">
-                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 44px; width: auto;" />
                             <span>CityCare</span>
                         </a>
                     }
@@ -59,7 +60,7 @@
                 else
                 {
                     <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
-                        <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
+                        <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 44px; width: auto;" />
                         <span>CityCare</span>
                     </a>
                 }
@@ -147,7 +148,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted soft-gray-footer">
+    <footer class="footer text-muted soft-gray-footer">
         <div class="container footer-content">
              &copy; 2026 - CityCare
          </div>

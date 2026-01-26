@@ -5,68 +5,84 @@
 }
 
 <div class="container py-4">
-    <h3 class="mb-3">Complaints</h3>
-
-    <div class="mb-3">
-        <a class="btn btn-sm @(active == "all" ? "btn-primary" : "btn-outline-primary")"
-           asp-action="Dashboard" asp-route-filter="all">All</a>
-
-        <a class="btn btn-sm @(active == "pending" ? "btn-primary" : "btn-outline-primary")"
-           asp-action="Dashboard" asp-route-filter="pending">Pending</a>
-
-        <a class="btn btn-sm @(active == "inprogress" ? "btn-primary" : "btn-outline-primary")"
-           asp-action="Dashboard" asp-route-filter="inprogress">In Progress</a>
-
-        <a class="btn btn-sm @(active == "resolved" ? "btn-primary" : "btn-outline-primary")"
-           asp-action="Dashboard" asp-route-filter="resolved">Resolved</a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1">Incoming Complaints</h2>
+            <p class="text-muted mb-0">Manage and resolve reported issues in your area.</p>
+        </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-2 bg-light rounded">
+            <div class="nav nav-pills nav-fill">
+                <a class="nav-link fw-semibold @(active == "all" ? "shadow-sm" : "text-muted")"
+                   style="@(active == "all" ? "background-color: #eab308; color: white;" : "")"
+                   asp-action="Dashboard" asp-route-filter="all">All Issues</a>
+
+                <a class="nav-link fw-semibold @(active == "pending" ? "bg-danger text-white shadow-sm" : "text-muted")"
+                   asp-action="Dashboard" asp-route-filter="pending">Pending</a>
+
+                <a class="nav-link fw-semibold @(active == "inprogress" ? "bg-primary text-white shadow-sm" : "text-muted")"
+                   asp-action="Dashboard" asp-route-filter="inprogress">In Progress</a>
+
+                <a class="nav-link fw-semibold @(active == "resolved" ? "bg-success text-white shadow-sm" : "text-muted")"
+                   asp-action="Dashboard" asp-route-filter="resolved">Resolved</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
             @if (!Model.Issues.Any())
             {
-                <p class="text-muted mb-0">No complaints found for this filter.</p>
+                <div class="text-center py-5">
+                    <div class="mb-3 text-muted" style="font-size: 3rem;">📭</div>
+                    <h5 class="fw-bold text-muted">No complaints found</h5>
+                    <p class="text-muted mb-0">There are no issues matching the selected filter.</p>
+                </div>
             }
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-secondary">
                             <tr>
-                                <th>#</th>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>City</th>
-                                <th>Citizen</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th class="text-end">Action</th>
+                                <th class="ps-4 py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Title</th>
+                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Category</th>
+                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">City</th>
+                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Citizen</th>
+                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Status</th>
+                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Date</th>
+                                <th class="pe-4 py-3 text-end text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @{
-                                int n = 1;
-                            }
                             @foreach (var item in Model.Issues)
                             {
+                                string badgeClass = item.Status switch
+                                {
+                                    CityCare.Models.Entities.IssueStatus.Pending => "bg-danger",
+                                    CityCare.Models.Entities.IssueStatus.InProgress => "bg-primary",
+                                    CityCare.Models.Entities.IssueStatus.Resolved => "bg-success",
+                                    _ => "bg-secondary"
+                                };
+
                                 <tr>
-                                    <td>@n</td>
-                                    <td>@item.Title</td>
-                                    <td>@item.Category</td>
+                                    <td class="ps-4 fw-semibold text-dark">@item.Title</td>
+                                    <td><span class="badge bg-light text-dark border">@item.Category</span></td>
                                     <td>@item.City?.Name</td>
                                     <td>@item.Citizen?.FullName</td>
-                                    <td><span class="badge bg-secondary">@item.Status</span></td>
-                                    <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
-                                    <td class="text-end">
-                                        <a class="btn btn-outline-primary btn-sm"
+                                    <td><span class="badge rounded-pill @badgeClass px-3">@item.Status</span></td>
+                                    <td class="text-muted small">@item.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</td>
+                                    <td class="pe-4 text-end">
+                                        <a class="btn btn-sm btn-light text-primary fw-medium"
                                            asp-controller="Staff"
                                            asp-action="Details"
                                            asp-route-id="@item.Id">
-                                            View
+                                            Review
                                         </a>
                                     </td>
                                 </tr>
-                                n++;
                             }
                         </tbody>
                     </table>

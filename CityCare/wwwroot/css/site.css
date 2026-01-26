@@ -24,7 +24,7 @@ body {
 }
 
 body.public-layout {
-  background: radial-gradient(circle at 20% 20%, #53a4ff 0%, #1f66ff 35%, #09307a 85%);
+  background: radial-gradient(circle at 50% 35%, #0f2f80 0%, #081a4a 55%, #020818 100%);
   color: #f6fbff;
 }
 
@@ -61,7 +61,7 @@ body.app-shell main {
 }
 
 .brand-gradient-bg {
-  background: linear-gradient(90deg, #0b45c9 0%, #1f66ff 50%, #0a328d 100%) !important;
+  background: #0000AA !important;
   color: #f2f6ff;
 }
 
@@ -101,4 +101,66 @@ body.app-shell main {
 
 .brand-gradient-bg .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+/* Navbar color */
+:root {
+    --navbar-bg: #08255e;
+    --navbar-fg: #ffffff;
+}
+
+.navbar,
+.navbar.navbar-light,
+.navbar.navbar-dark {
+    background-color: var(--navbar-bg) !important;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link,
+.navbar .navbar-text {
+    color: var(--navbar-fg) !important;
+}
+
+.navbar .nav-link:hover,
+.navbar .navbar-brand:hover {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.navbar .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.navbar .navbar-toggler-icon {
+    filter: invert(1) grayscale(1) brightness(2);
+}
+
+body.public-layout header,
+body.public-layout header .navbar {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.public-layout header .navbar::after,
+body.public-layout header .navbar::before {
+  content: none !important;
+}
+
+body.public-layout header + .container,
+body.public-layout main,
+body.public-layout .container {
+  border-top: 0 !important;
+}
+
+body.public-layout hr {
+  border: 0 !important;
+}
+
+body.app-shell footer,
+footer.footer {
+  border-top: 0 !important;
+  box-shadow: none !important;
 }
