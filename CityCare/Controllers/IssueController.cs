@@ -28,12 +28,12 @@ public class IssueController : Controller
     // -----------------------------
     public async Task<IActionResult> Dashboard()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
 
         var issues = await _db.Issues
             .Include(i => i.City)
-            .Where(i => i.CitizenId == user.Id)
+            .Where(i => i.CitizenId == uid)
             .OrderByDescending(i => i.CreatedAt)
             .ToListAsync();
 
@@ -51,12 +51,10 @@ public class IssueController : Controller
 
         await LoadCreateDropdownsAsync();
 
-        var vm = new CreateIssueViewModel
+        return View(new CreateIssueViewModel
         {
             CityId = user.CityId ?? 0
-        };
-
-        return View(vm);
+        });
     }
 
     // -----------------------------
@@ -71,14 +69,14 @@ public class IssueController : Controller
 
         await LoadCreateDropdownsAsync();
 
-        // default city if not selected
+        // Default city if not selected
         if (vm.CityId == 0 && user.CityId != null)
             vm.CityId = user.CityId.Value;
 
         if (!ModelState.IsValid)
             return View(vm);
 
-        // validate city exists
+        // Validate city exists
         var cityOk = await _db.Cities.AnyAsync(c => c.Id == vm.CityId && c.IsActive);
         if (!cityOk)
         {
@@ -86,89 +84,37 @@ public class IssueController : Controller
             return View(vm);
         }
 
-        // create issue
+        // Safety: category check
+        var category = (vm.Category ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(category))
+        {
+            ModelState.AddModelError(nameof(vm.Category), "Please select a category.");
+            return View(vm);
+        }
+
+        // Create issue
         var issue = new Issue
         {
-            Title = vm.Title,
-            Description = vm.Description,
-            Category = vm.Category,
+            Title = vm.Title?.Trim() ?? "",
+            Description = vm.Description?.Trim() ?? "",
+            Category = category,
             CityId = vm.CityId,
-            LocationText = vm.LocationText,
+            LocationText = vm.LocationText?.Trim() ?? "",
             CitizenId = user.Id,
             Status = IssueStatus.Pending,
             CreatedAt = DateTime.UtcNow
         };
 
-        // snapshot contact phone (based on staff users)
-        var deptForPhone = await _db.Departments
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == vm.Category.Trim().ToLower());
-
-        if (deptForPhone != null)
-        {
-            var staffRoleId = await _db.Roles
-                .AsNoTracking()
-                .Where(r => r.NormalizedName == "STAFF")
-                .Select(r => r.Id)
-                .FirstOrDefaultAsync();
-
-            if (!string.IsNullOrEmpty(staffRoleId))
-            {
-                var phone = await _db.Users
-                    .AsNoTracking()
-                    .Where(u => u.CityId == issue.CityId && u.DepartmentId == deptForPhone.Id)
-                    .Join(_db.UserRoles.AsNoTracking().Where(ur => ur.RoleId == staffRoleId),
-                        u => u.Id,
-                        ur => ur.UserId,
-                        (u, ur) => u)
-                    .Where(u => !string.IsNullOrEmpty(u.PhoneNumber))
-                    .OrderBy(u => u.CreatedAt)
-                    .Select(u => u.PhoneNumber)
-                    .FirstOrDefaultAsync();
-
-                issue.ContactPhone = string.IsNullOrWhiteSpace(phone) ? null : phone;
-            }
-        }
+        // Snapshot contact phone (optional)
+        await FillContactPhoneAsync(issue, category);
 
         _db.Issues.Add(issue);
         await _db.SaveChangesAsync();
 
-        // upload image (optional)
-        if (vm.ImageFile != null && vm.ImageFile.Length > 0)
-        {
-            var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
-            if (!allowed.Contains(vm.ImageFile.ContentType))
-            {
-                ModelState.AddModelError(nameof(vm.ImageFile), "Please upload a JPG, PNG, or WEBP image.");
-                return View(vm);
-            }
+        // Upload image (optional)
+        await SaveIssueImageIfExistsAsync(issue.Id, vm.ImageFile);
 
-            var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "issues");
-            Directory.CreateDirectory(uploadsRoot);
-
-            var ext = Path.GetExtension(vm.ImageFile.FileName);
-            var fileName = $"issue-{issue.Id}-{Guid.NewGuid():N}{ext}";
-            var savePath = Path.Combine(uploadsRoot, fileName);
-
-            using (var stream = new FileStream(savePath, FileMode.Create))
-            {
-                await vm.ImageFile.CopyToAsync(stream);
-            }
-
-            var imageUrl = $"/uploads/issues/{fileName}";
-
-            _db.IssueImages.Add(new IssueImage
-            {
-                IssueId = issue.Id,
-                ImageUrl = imageUrl
-            });
-
-            await _db.SaveChangesAsync();
-        }
-
-        // -----------------------------
         // Citizen notification
-        // -----------------------------
         _db.Notifications.Add(new Notification
         {
             UserId = user.Id,
@@ -179,38 +125,10 @@ public class IssueController : Controller
             IsRead = false
         });
 
+        // Notify staff
+        await NotifyStaffAsync(issue);
+
         await _db.SaveChangesAsync();
-
-        // -----------------------------
-        // ✅ IMPROVED: Notify staff (case-insensitive + better matching)
-        // -----------------------------
-        var dept = await _db.Departments
-            .FirstOrDefaultAsync(d => d.Name.ToLower() == vm.Category.ToLower() && d.IsActive);
-
-        if (dept != null)
-        {
-            var staffUsers = await _db.Users
-                .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
-                .ToListAsync();
-
-            if (staffUsers.Any())
-            {
-                foreach (var staff in staffUsers)
-                {
-                    _db.Notifications.Add(new Notification
-                    {
-                        UserId = staff.Id,
-                        IssueId = issue.Id,
-                        Title = "New Complaint Assigned",
-                        Message = $"New {issue.Category} complaint: \"{issue.Title}\"",
-                        CreatedAt = DateTime.UtcNow,
-                        IsRead = false
-                    });
-                }
-
-                await _db.SaveChangesAsync();
-            }
-        }
 
         TempData["Success"] = "Complaint submitted successfully!";
         return RedirectToAction(nameof(Dashboard));
@@ -222,14 +140,14 @@ public class IssueController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
 
         var issue = await _db.Issues
             .Include(i => i.City)
-            .Include(i => i.Images)
+            .Include(i => i.Images)   // ✅ must include
             .Include(i => i.Rating)
-            .FirstOrDefaultAsync(i => i.Id == id && i.CitizenId == user.Id);
+            .FirstOrDefaultAsync(i => i.Id == id && i.CitizenId == uid);
 
         if (issue == null) return NotFound();
 
@@ -256,12 +174,12 @@ public class IssueController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Rate(RateIssueViewModel vm)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
 
         var issue = await _db.Issues
             .Include(i => i.Rating)
-            .FirstOrDefaultAsync(i => i.Id == vm.IssueId && i.CitizenId == user.Id);
+            .FirstOrDefaultAsync(i => i.Id == vm.IssueId && i.CitizenId == uid);
 
         if (issue == null) return NotFound();
 
@@ -278,11 +196,8 @@ public class IssueController : Controller
         }
 
         if (!ModelState.IsValid)
-        {
             return await Details(vm.IssueId);
-        }
 
-        // Create rating
         _db.Ratings.Add(new Rating
         {
             IssueId = issue.Id,
@@ -293,46 +208,8 @@ public class IssueController : Controller
 
         await _db.SaveChangesAsync();
 
-        // -----------------------------
-        // ✅ IMPROVED: Notify staff about the rating (case-insensitive)
-        // -----------------------------
-        var dept = await _db.Departments
-            .FirstOrDefaultAsync(d => d.Name.ToLower() == issue.Category.ToLower() && d.IsActive);
-
-        if (dept != null)
-        {
-            var staffUsers = await _db.Users
-                .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
-                .ToListAsync();
-
-            if (staffUsers.Any())
-            {
-                var starEmoji = vm.Stars switch
-                {
-                    5 => "⭐⭐⭐⭐⭐",
-                    4 => "⭐⭐⭐⭐",
-                    3 => "⭐⭐⭐",
-                    2 => "⭐⭐",
-                    1 => "⭐",
-                    _ => ""
-                };
-
-                foreach (var staff in staffUsers)
-                {
-                    _db.Notifications.Add(new Notification
-                    {
-                        UserId = staff.Id,
-                        IssueId = issue.Id,
-                        Title = "Complaint Rated",
-                        Message = $"Complaint \"{issue.Title}\" received {starEmoji} rating.",
-                        CreatedAt = DateTime.UtcNow,
-                        IsRead = false
-                    });
-                }
-
-                await _db.SaveChangesAsync();
-            }
-        }
+        // Notify staff about rating
+        await NotifyStaffRatingAsync(issue, vm.Stars);
 
         TempData["Success"] = "Thank you! Your rating was submitted.";
         return RedirectToAction(nameof(Details), new { id = vm.IssueId });
@@ -347,14 +224,15 @@ public class IssueController : Controller
         if (string.IsNullOrWhiteSpace(category) || cityId <= 0)
             return Json(new LookupStaffPhoneResponse { staffPhone = null });
 
+        var trimmed = category.Trim();
+
         var dept = await _db.Departments
             .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == category.Trim().ToLower());
+            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == trimmed.ToLower());
 
         if (dept == null)
             return Json(new LookupStaffPhoneResponse { staffPhone = null });
 
-        // Only Staff role users
         var staffRoleId = await _db.Roles
             .AsNoTracking()
             .Where(r => r.NormalizedName == "STAFF")
@@ -376,7 +254,10 @@ public class IssueController : Controller
             .Select(u => u.PhoneNumber)
             .FirstOrDefaultAsync();
 
-        return Json(new LookupStaffPhoneResponse { staffPhone = string.IsNullOrWhiteSpace(phone) ? null : phone });
+        return Json(new LookupStaffPhoneResponse
+        {
+            staffPhone = string.IsNullOrWhiteSpace(phone) ? null : phone
+        });
     }
 
     // -----------------------------
@@ -396,21 +277,123 @@ public class IssueController : Controller
         };
     }
 
-    // Unread Notifications Count
-    public int GetUnreadNotificationsCount()
+    private async Task SaveIssueImageIfExistsAsync(int issueId, IFormFile? imageFile)
     {
-        int unreadCount = 0;
+        if (imageFile == null || imageFile.Length == 0) return;
 
-        if (User.Identity != null && User.Identity.IsAuthenticated)
+        var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+        if (!allowed.Contains(imageFile.ContentType))
+            return; // silently ignore (or you can throw ModelState error)
+
+        var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "issues");
+        Directory.CreateDirectory(uploadsRoot);
+
+        var ext = Path.GetExtension(imageFile.FileName);
+        var fileName = $"issue-{issueId}-{Guid.NewGuid():N}{ext}";
+        var savePath = Path.Combine(uploadsRoot, fileName);
+
+        using var stream = new FileStream(savePath, FileMode.Create);
+        await imageFile.CopyToAsync(stream);
+
+        var imageUrl = $"/uploads/issues/{fileName}";
+
+        _db.IssueImages.Add(new IssueImage
         {
-            var uid = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            IssueId = issueId,
+            ImageUrl = imageUrl
+        });
+    }
 
-            if (!string.IsNullOrEmpty(uid))
+    private async Task FillContactPhoneAsync(Issue issue, string category)
+    {
+        var deptForPhone = await _db.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == category.ToLower());
+
+        if (deptForPhone == null) return;
+
+        var staffRoleId = await _db.Roles
+            .AsNoTracking()
+            .Where(r => r.NormalizedName == "STAFF")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrEmpty(staffRoleId)) return;
+
+        var phone = await _db.Users
+            .AsNoTracking()
+            .Where(u => u.CityId == issue.CityId && u.DepartmentId == deptForPhone.Id)
+            .Join(_db.UserRoles.AsNoTracking().Where(ur => ur.RoleId == staffRoleId),
+                u => u.Id,
+                ur => ur.UserId,
+                (u, ur) => u)
+            .Where(u => !string.IsNullOrEmpty(u.PhoneNumber))
+            .OrderBy(u => u.CreatedAt)
+            .Select(u => u.PhoneNumber)
+            .FirstOrDefaultAsync();
+
+        issue.ContactPhone = string.IsNullOrWhiteSpace(phone) ? null : phone;
+    }
+
+    private async Task NotifyStaffAsync(Issue issue)
+    {
+        var dept = await _db.Departments
+            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == issue.Category.ToLower());
+
+        if (dept == null) return;
+
+        var staffUsers = await _db.Users
+            .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
+            .ToListAsync();
+
+        foreach (var staff in staffUsers)
+        {
+            _db.Notifications.Add(new Notification
             {
-                unreadCount = _db.Notifications.Count(n => n.UserId == uid && !n.IsRead);
-            }
+                UserId = staff.Id,
+                IssueId = issue.Id,
+                Title = "New Complaint Assigned",
+                Message = $"New {issue.Category} complaint: \"{issue.Title}\"",
+                CreatedAt = DateTime.UtcNow,
+                IsRead = false
+            });
+        }
+    }
+
+    private async Task NotifyStaffRatingAsync(Issue issue, int stars)
+    {
+        var dept = await _db.Departments
+            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == issue.Category.ToLower());
+
+        if (dept == null) return;
+
+        var staffUsers = await _db.Users
+            .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
+            .ToListAsync();
+
+        string starEmoji = stars switch
+        {
+            5 => "⭐⭐⭐⭐⭐",
+            4 => "⭐⭐⭐⭐",
+            3 => "⭐⭐⭐",
+            2 => "⭐⭐",
+            1 => "⭐",
+            _ => ""
+        };
+
+        foreach (var staff in staffUsers)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                UserId = staff.Id,
+                IssueId = issue.Id,
+                Title = "Complaint Rated",
+                Message = $"Complaint \"{issue.Title}\" received {starEmoji} rating.",
+                CreatedAt = DateTime.UtcNow,
+                IsRead = false
+            });
         }
 
-        return unreadCount;
+        await _db.SaveChangesAsync();
     }
 }

@@ -23,7 +23,12 @@
     }
 </head>
 
+
+
 <body class="app-shell">
+
+
+
     @{
         int unreadCount = 0;
 
@@ -187,5 +192,9 @@
     }
 
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+
 </body>
 </html>

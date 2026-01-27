@@ -21,17 +21,37 @@ public class StaffController : Controller
     }
 
     // -----------------------------
-    // STAFF DASHBOARD (already)
+    // STAFF DASHBOARD
     // -----------------------------
     public async Task<IActionResult> Dashboard(string filter = "all")
     {
         var staff = await _userManager.GetUserAsync(User);
         if (staff == null) return RedirectToAction("Login", "Account");
 
+        // ✅ Must have City + Department
+        if (staff.CityId == null || staff.DepartmentId == null)
+        {
+            TempData["Error"] = "Your staff account is missing City or Department assignment. Contact admin.";
+            return View(new StaffDashboardViewModel { Filter = filter, Issues = new List<Issue>() });
+        }
+
+        // ✅ Get staff department name (Water/Garbage) to match Issue.Category
+        var dept = await _db.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == staff.DepartmentId && d.IsActive);
+
+        if (dept == null)
+        {
+            TempData["Error"] = "Your department is not active. Contact admin.";
+            return View(new StaffDashboardViewModel { Filter = filter, Issues = new List<Issue>() });
+        }
+
         var query = _db.Issues
             .Include(i => i.City)
             .Include(i => i.Citizen)
-            .Where(i => i.CityId == staff.CityId);
+            .Where(i =>
+                i.CityId == staff.CityId &&
+                i.Category.ToLower() == dept.Name.ToLower()); // ✅ Water staff sees Water only
 
         query = filter switch
         {
@@ -59,13 +79,23 @@ public class StaffController : Controller
         var staff = await _userManager.GetUserAsync(User);
         if (staff == null) return RedirectToAction("Login", "Account");
 
+        if (staff.CityId == null || staff.DepartmentId == null)
+            return Unauthorized();
+
+        var dept = await _db.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == staff.DepartmentId && d.IsActive);
+
+        if (dept == null) return Unauthorized();
+
         var issue = await _db.Issues
             .Include(i => i.City)
             .Include(i => i.Citizen)
             .Include(i => i.Images)
             .FirstOrDefaultAsync(i =>
                 i.Id == id &&
-                i.CityId == staff.CityId);
+                i.CityId == staff.CityId &&
+                i.Category.ToLower() == dept.Name.ToLower()); // ✅ protect by dept
 
         if (issue == null) return NotFound();
 
@@ -86,25 +116,37 @@ public class StaffController : Controller
         var staff = await _userManager.GetUserAsync(User);
         if (staff == null) return RedirectToAction("Login", "Account");
 
+        if (staff.CityId == null || staff.DepartmentId == null)
+            return Unauthorized();
+
+        var dept = await _db.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == staff.DepartmentId && d.IsActive);
+
+        if (dept == null) return Unauthorized();
+
         var issue = await _db.Issues
             .Include(i => i.Citizen)
             .FirstOrDefaultAsync(i =>
                 i.Id == vm.Issue.Id &&
-                i.CityId == staff.CityId);
+                i.CityId == staff.CityId &&
+                i.Category.ToLower() == dept.Name.ToLower()); // ✅ protect by dept
 
         if (issue == null) return NotFound();
 
-        // Update status
+        // ✅ Assign staff + update status
+        issue.AssignedStaffId = staff.Id;
         issue.Status = vm.NewStatus;
 
-        // Create notification for citizen
+        // ✅ Notify citizen
         _db.Notifications.Add(new Notification
         {
             UserId = issue.CitizenId,
             IssueId = issue.Id,
             Title = "Complaint Status Updated",
             Message = $"Your complaint \"{issue.Title}\" status changed to {vm.NewStatus}.",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
         });
 
         await _db.SaveChangesAsync();
