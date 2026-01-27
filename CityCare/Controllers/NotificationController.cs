@@ -19,25 +19,25 @@ public class NotificationController : Controller
         _userManager = userManager;
     }
 
-    // ✅ NEW: API endpoint to get unread count
+    // ✅ API endpoint to get unread count
     [HttpGet]
     public async Task<IActionResult> GetUnreadCount()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Json(new { count = 0 });
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return Json(new { count = 0 });
 
-        var count = await _db.Notifications.CountAsync(n => n.UserId == user.Id && !n.IsRead);
+        var count = await _db.Notifications.CountAsync(n => n.UserId == uid && !n.IsRead);
         return Json(new { count });
     }
 
-    // List notifications
+    // ✅ List notifications
     public async Task<IActionResult> Index()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
 
         var list = await _db.Notifications
-            .Where(n => n.UserId == user.Id)
+            .Where(n => n.UserId == uid)
             .OrderByDescending(n => n.CreatedAt)
             .Take(50)
             .ToListAsync();
@@ -45,43 +45,85 @@ public class NotificationController : Controller
         return View(list);
     }
 
-    // Mark all as read
+    // ✅ Mark all as read
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAllRead()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
 
         var unread = await _db.Notifications
-            .Where(n => n.UserId == user.Id && !n.IsRead)
+            .Where(n => n.UserId == uid && !n.IsRead)
             .ToListAsync();
 
-        foreach (var n in unread) n.IsRead = true;
+        foreach (var n in unread)
+            n.IsRead = true;
 
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    // Mark one as read and go to Issue details (optional)
+    // ✅ Mark one as read + redirect
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Open(int id)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
 
-        var n = await _db.Notifications.FirstOrDefaultAsync(x => x.Id == id && x.UserId == user.Id);
+        var n = await _db.Notifications.FirstOrDefaultAsync(x => x.Id == id && x.UserId == uid);
         if (n == null) return NotFound();
 
         n.IsRead = true;
         await _db.SaveChangesAsync();
 
-        // redirect to issue details depending on role
         if (n.IssueId != null)
         {
             if (User.IsInRole("Staff"))
                 return RedirectToAction("Details", "Staff", new { id = n.IssueId });
-            else
-                return RedirectToAction("Details", "Issue", new { id = n.IssueId });
+
+            return RedirectToAction("Details", "Issue", new { id = n.IssueId });
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ✅ Delete ONE notification
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var uid = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
+
+        var notif = await _db.Notifications
+            .FirstOrDefaultAsync(n => n.Id == id && n.UserId == uid);
+
+        if (notif == null) return NotFound();
+
+        _db.Notifications.Remove(notif);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ✅ Delete ALL read notifications
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ClearRead()
+    {
+        var uid = _userManager.GetUserId(User);   // ✅ FIXED HERE
+        if (string.IsNullOrEmpty(uid)) return RedirectToAction("Login", "Account");
+
+        var readNotifs = await _db.Notifications
+            .Where(n => n.UserId == uid && n.IsRead)
+            .ToListAsync();
+
+        if (readNotifs.Count > 0)
+        {
+            _db.Notifications.RemoveRange(readNotifs);
+            await _db.SaveChangesAsync();
         }
 
         return RedirectToAction(nameof(Index));

@@ -1,27 +1,41 @@
-@model List<CityCare.Models.Entities.Notification>
+﻿@model List<CityCare.Models.Entities.Notification>
 @{
     ViewData["Title"] = "Notifications";
 }
 
 <div class="citizen-page">
     <div class="container" style="max-width: 900px;">
-        
+
         <!-- Header Section -->
         <div class="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom border-2" style="border-color: var(--border);">
             <div>
                 <h1 class="page-title">Notifications</h1>
                 <p class="page-subtitle">Updates about your complaints and system messages</p>
             </div>
-            
-            @if (Model.Any(n => !n.IsRead))
-            {
-                <form asp-action="MarkAllRead" method="post">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-cc-outline btn-sm">
-                        <i class="bi bi-check-all"></i> Mark all as read
-                    </button>
-                </form>
-            }
+
+            <div class="d-flex gap-2 flex-wrap justify-content-end">
+                @* ✅ Clear all read *@
+                @if (Model.Any(n => n.IsRead))
+                {
+                    <form asp-action="ClearRead" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-cc-outline btn-sm">
+                            <i class="bi bi-trash3"></i> Clear read
+                        </button>
+                    </form>
+                }
+
+                @* ✅ Mark all as read *@
+                @if (Model.Any(n => !n.IsRead))
+                {
+                    <form asp-action="MarkAllRead" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-cc-outline btn-sm">
+                            <i class="bi bi-check-all"></i> Mark all as read
+                        </button>
+                    </form>
+                }
+            </div>
         </div>
 
         <!-- Notifications Container -->
@@ -29,7 +43,7 @@
             @if (!Model.Any())
             {
                 <div class="notify-empty">
-                    <div class="notify-empty-icon">??</div>
+                    <div class="notify-empty-icon">🔔</div>
                     <h3 class="notify-empty-title">You're all caught up!</h3>
                     <p class="notify-empty-text">No new notifications to display. Check back later for updates about your complaints.</p>
                 </div>
@@ -40,57 +54,82 @@
                     @foreach (var n in Model)
                     {
                         var unreadClass = n.IsRead ? "" : "unread";
-                        
-                        <!-- Determine icon based on notification context -->
+
+                        // Determine icon based on notification context
                         var iconClass = "bi-bell";
-                        if (n.Title.Contains("submitted", StringComparison.OrdinalIgnoreCase))
-                            iconClass = "bi-pencil-square";
-                        else if (n.Title.Contains("status", StringComparison.OrdinalIgnoreCase))
-                            iconClass = "bi-arrow-repeat";
-                        else if (n.Title.Contains("resolved", StringComparison.OrdinalIgnoreCase))
-                            iconClass = "bi-check-circle";
-                        else if (n.Title.Contains("comment", StringComparison.OrdinalIgnoreCase))
-                            iconClass = "bi-chat-dots";
+                        if (!string.IsNullOrWhiteSpace(n.Title))
+                        {
+                            if (n.Title.Contains("submitted", StringComparison.OrdinalIgnoreCase))
+                                iconClass = "bi-pencil-square";
+                            else if (n.Title.Contains("status", StringComparison.OrdinalIgnoreCase))
+                                iconClass = "bi-arrow-repeat";
+                            else if (n.Title.Contains("resolved", StringComparison.OrdinalIgnoreCase))
+                                iconClass = "bi-check-circle";
+                            else if (n.Title.Contains("comment", StringComparison.OrdinalIgnoreCase))
+                                iconClass = "bi-chat-dots";
+                        }
 
                         <li class="notify-item @unreadClass">
-                            <a asp-action="Open" asp-route-id="@n.Id" style="flex: 1; display: flex; align-items: center; gap: 1rem; text-decoration: none; color: inherit;">
-                                
-                                <!-- Icon Circle -->
-                                <div class="notify-icon">
-                                    <i class="bi @iconClass"></i>
-                                </div>
 
-                                <!-- Content -->
-                                <div class="notify-content" style="flex: 1; min-width: 0;">
-                                    <h5 class="notify-title">
-                                        @if (!n.IsRead)
-                                        {
-                                            <span class="notify-badge"></span>
+                            <!-- ✅ LEFT: Open notification (POST) -->
+                            <form asp-action="Open" asp-route-id="@n.Id" method="post"
+                                  class="notify-open-form"
+                                  style="flex: 1; display:flex; align-items:center; gap:1rem; margin:0;">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="notify-open-btn"
+                                        style="all: unset; cursor: pointer; flex: 1; display:flex; align-items:center; gap:1rem;">
+                                    <!-- Icon Circle -->
+                                    <div class="notify-icon">
+                                        <i class="bi @iconClass"></i>
+                                    </div>
+
+                                    <!-- Content -->
+                                    <div class="notify-content" style="flex: 1; min-width: 0;">
+                                        <h5 class="notify-title">
+                                            @if (!n.IsRead)
+                                            {
+                                                <span class="notify-badge"></span>
+                                            }
+                                            @n.Title
+                                        </h5>
+                                        <p class="notify-msg">@n.Message</p>
+                                    </div>
+
+                                    <!-- Time -->
+                                    <div class="notify-time">
+                                        @{
+                                            var notificationDate = n.CreatedAt.ToLocalTime();
+                                            var timeSpan = DateTime.Now - notificationDate;
+
+                                            string timeText;
+                                            if (timeSpan.TotalMinutes < 1)
+                                                timeText = "Just now";
+                                            else if (timeSpan.TotalMinutes < 60)
+                                                timeText = $"{(int)timeSpan.TotalMinutes}m ago";
+                                            else if (timeSpan.TotalHours < 24)
+                                                timeText = $"{(int)timeSpan.TotalHours}h ago";
+                                            else
+                                                timeText = notificationDate.ToString("MMM dd");
                                         }
-                                        @n.Title
-                                    </h5>
-                                    <p class="notify-msg">@n.Message</p>
-                                </div>
+                                        @timeText
+                                    </div>
+                                </button>
+                            </form>
 
-                                <!-- Time -->
-                                <div class="notify-time">
-                                    @{
-                                        var notificationDate = n.CreatedAt.ToLocalTime();
-                                        var timeSpan = DateTime.Now - notificationDate;
-                                        
-                                        string timeText;
-                                        if (timeSpan.TotalMinutes < 1)
-                                            timeText = "Just now";
-                                        else if (timeSpan.TotalMinutes < 60)
-                                            timeText = $"{(int)timeSpan.TotalMinutes}m ago";
-                                        else if (timeSpan.TotalHours < 24)
-                                            timeText = $"{(int)timeSpan.TotalHours}h ago";
-                                        else
-                                            timeText = notificationDate.ToString("MMM dd");
-                                    }
-                                    @timeText
-                                </div>
-                            </a>
+                            <!-- ✅ RIGHT: Delete icon (red) -->
+                            <form asp-action="Delete" asp-route-id="@n.Id" method="post" class="ms-2" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="btn btn-link p-0 notify-trash"
+                                        title="Delete notification"
+                                        aria-label="Delete notification"
+                                        onclick="return confirm('Delete this notification?');">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+
                         </li>
                     }
                 </ul>
@@ -98,3 +137,4 @@
         </div>
     </div>
 </div>
+

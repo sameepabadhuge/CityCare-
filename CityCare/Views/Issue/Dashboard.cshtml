@@ -5,12 +5,22 @@
 
 <div class="container citizen-page">
 
+    @* ✅ Success toast *@
     @if (TempData["Success"] != null)
     {
-        <div class="alert-cc success">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>@TempData["Success"]</span>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        <div id="ccToastSuccess" class="cc-toast cc-toast-success" role="alert" aria-live="polite">
+            <div class="cc-toast-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+
+            <div class="cc-toast-body">
+                <div class="cc-toast-title">Success</div>
+                <div class="cc-toast-text">@TempData["Success"]</div>
+            </div>
+
+            <button type="button" class="cc-toast-close" aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
     }
 
@@ -59,7 +69,6 @@
                     <tbody>
                         @foreach (var item in Model.Issues)
                         {
-                            // ✅ FIX: Replace switch-expression with safe if/else block
                             string badgeClass = "badge-pending";
                             string badgeIcon = "bi-question-circle";
 
@@ -115,3 +124,26 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const toast = document.getElementById("ccToastSuccess");
+            if (!toast) return;
+
+            const closeBtn = toast.querySelector(".cc-toast-close");
+            const hide = () => {
+                toast.classList.add("hide");
+                setTimeout(() => toast.remove(), 250);
+            };
+
+            if (closeBtn) closeBtn.addEventListener("click", hide);
+
+            // ✅ Auto remove after  8 second
+            setTimeout(() => {
+                if (!document.body.contains(toast)) return;
+                hide();
+            }, 8000);
+        })();
+    </script>
+}
