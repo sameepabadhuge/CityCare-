@@ -9,7 +9,7 @@
     <div class="landing-hero min-vh-100 d-flex flex-column justify-content-center position-relative overflow-hidden">
         <!-- Background decoration -->
         <div class="hero-decoration"></div>
-        
+
         <div class="container py-5 position-relative z-3">
             <div class="row justify-content-center text-center">
                 <div class="col-12 col-lg-10">
@@ -28,12 +28,15 @@
                                asp-action="Login">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>Get Started
                             </a>
-                            <button class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg hero-btn-secondary" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#learnMoreModal">
+
+                            <!-- ✅ UPDATED: Learn More goes to About page (no modal) -->
+                            <a class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg hero-btn-secondary"
+                               asp-controller="Home"
+                               asp-action="About">
                                 <i class="bi bi-info-circle me-2"></i>Learn More
-                            </button>
+                            </a>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -109,33 +112,4 @@
             </div>
         </div>
     </section>
-</div>
-
-<!-- Learn More Modal -->
-<div class="modal fade" id="learnMoreModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content border-0">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold">About CityCare</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-3">
-                    CityCare is a collaborative platform designed to bridge the gap between citizens and government departments.
-                </p>
-                <h6 class="fw-bold mb-2">Key Features:</h6>
-                <ul class="small mb-3">
-                    <li><strong>For Citizens:</strong> Report municipal issues, track progress, and contribute to city improvement</li>
-                    <li><strong>For Staff:</strong> Manage reported issues, coordinate responses, and update status</li>
-                    <li><strong>For Admins:</strong> Oversee system operations, manage departments, and generate reports</li>
-                </ul>
-                <p class="text-muted small">
-                    Together, we create more responsive and accountable cities by empowering citizens and streamlining municipal services.
-                </p>
-            </div>
-            <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
 </div>
