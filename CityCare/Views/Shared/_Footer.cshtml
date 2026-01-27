@@ -1,0 +1,55 @@
+﻿<footer class="cc-footer mt-auto">
+    <div class="container py-5">
+        <div class="row g-4">
+
+            <!-- Brand -->
+            <div class="col-lg-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 36px;" />
+                    <h5 class="mb-0 text-white">CityCare</h5>
+                </div>
+                <p class="text-white-50 small mb-0">
+                    CityCare is a smart city issue reporting system that helps citizens report problems
+                    and helps municipal staff track and resolve them efficiently.
+                </p>
+            </div>
+
+            <!-- Project -->
+            <div class="col-6 col-lg-3">
+                <h6 class="text-white mb-3">Project</h6>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2"><a class="cc-footer-link" asp-controller="Home" asp-action="About">About</a></li>
+                    <li class="mb-2"><a class="cc-footer-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="mb-2"><a class="cc-footer-link" asp-controller="Account" asp-action="Login">Sign In</a></li>
+                </ul>
+            </div>
+
+            <!-- Features -->
+            <div class="col-6 col-lg-3">
+                <h6 class="text-white mb-3">Features</h6>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2"><span class="text-white-50">Report Issues + Evidence Upload</span></li>
+                    <li class="mb-2"><span class="text-white-50">Status Tracking</span></li>
+                    <li class="mb-2"><span class="text-white-50">Notifications</span></li>
+                    <li class="mb-2"><span class="text-white-50">Admin & Staff Dashboards</span></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="col-12 col-lg-2">
+                <h6 class="text-white mb-3">Support</h6>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2"><a class="cc-footer-link" href="#">Privacy</a></li>
+                    <li class="mb-2"><a class="cc-footer-link" href="#">Terms</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <hr class="cc-footer-divider my-4" />
+
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
+            <p class="small text-white-50 mb-0">© @DateTime.Now.Year CityCare. All rights reserved.</p>
+            <p class="small text-white-50 mb-0">Navy + Yellow UI system</p>
+        </div>
+    </div>
+</footer>

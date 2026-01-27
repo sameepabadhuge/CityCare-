@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CityCare.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+
     @{
         var isCitizenOrStaffPage = !User.IsInRole("Admin");
     }
@@ -126,7 +127,8 @@
                             <li class="nav-item me-3 position-relative">
                                 <a class="nav-link" asp-controller="Notification" asp-action="Index" title="Notifications">
                                     <i class="bi bi-bell"></i>
-                                    <span id="notificationBadge" class="@(unreadCount > 0 ? "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" : "d-none")">
+                                    <span id="notificationBadge"
+                                          class="@(unreadCount > 0 ? "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" : "d-none")">
                                         @unreadCount
                                     </span>
                                 </a>
@@ -155,11 +157,8 @@
         </main>
     </div>
 
-    <footer class="footer text-muted soft-gray-footer">
-        <div class="container footer-content">
-             &copy; 2026 - CityCare
-         </div>
-     </footer>
+    <!-- ✅ Unified Footer (Same for all pages) -->
+    @await Html.PartialAsync("_Footer")
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -169,7 +168,7 @@
     {
         <script>
             // Auto-refresh notification count every 10 seconds
-            setInterval(function() {
+            setInterval(function () {
                 fetch('/Notification/GetUnreadCount')
                     .then(response => response.json())
                     .then(data => {
@@ -183,7 +182,7 @@
                         }
                     })
                     .catch(error => console.error('Error fetching notification count:', error));
-            }, 10000); // Refresh every 10 seconds
+            }, 10000);
         </script>
     }
 

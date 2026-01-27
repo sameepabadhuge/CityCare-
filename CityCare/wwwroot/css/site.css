@@ -55,7 +55,13 @@ body.app-shell {
   display: flex;
   flex-direction: column;
 }
+main {
+    flex: 1 0 auto;
+}
 
+.public-footer {
+    margin-top: auto;
+}
 body.app-shell > header {
   flex-shrink: 0;
 }
@@ -505,3 +511,31 @@ main {
   border-color: var(--yellow) !important;
   color: var(--yellow) !important;
 }
+
+
+
+/* ============================================
+   CITYCARE UNIFIED FOOTER (USE EVERYWHERE)
+   ============================================ */
+.cc-footer {
+    background: linear-gradient(180deg, #0b2a5b 0%, #071f44 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+    .cc-footer .cc-footer-link {
+        color: rgba(255, 255, 255, 0.70);
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+
+        .cc-footer .cc-footer-link:hover {
+            color: var(--yellow);
+            text-decoration: underline;
+        }
+
+    .cc-footer .cc-footer-divider {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
