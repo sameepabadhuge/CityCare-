@@ -1,53 +1,99 @@
-﻿@model List<CityCare.Models.Entities.Notification>
+@model List<CityCare.Models.Entities.Notification>
 @{
     ViewData["Title"] = "Notifications";
 }
 
-<div class="container py-4" style="max-width:800px;">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0">Notifications</h3>
+<div class="citizen-page">
+    <div class="container" style="max-width: 900px;">
         
-        @if (Model.Any(n => !n.IsRead))
-        {
-            <form asp-action="MarkAllRead" method="post">
-                @Html.AntiForgeryToken()
-                <button class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-check-all me-1"></i> Mark all as read
-                </button>
-            </form>
-        }
-    </div>
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom border-2" style="border-color: var(--border);">
+            <div>
+                <h1 class="page-title">Notifications</h1>
+                <p class="page-subtitle">Updates about your complaints and system messages</p>
+            </div>
+            
+            @if (Model.Any(n => !n.IsRead))
+            {
+                <form asp-action="MarkAllRead" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-cc-outline btn-sm">
+                        <i class="bi bi-check-all"></i> Mark all as read
+                    </button>
+                </form>
+            }
+        </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
+        <!-- Notifications Container -->
+        <div class="notify-card">
             @if (!Model.Any())
             {
-                <div class="text-center py-5">
-                    <div class="text-muted mb-3" style="font-size: 2.5rem;">🔔</div>
-                    <p class="text-muted fw-medium fs-5">You're all caught up!</p>
-                    <p class="text-muted small">No new notifications to display.</p>
+                <div class="notify-empty">
+                    <div class="notify-empty-icon">??</div>
+                    <h3 class="notify-empty-title">You're all caught up!</h3>
+                    <p class="notify-empty-text">No new notifications to display. Check back later for updates about your complaints.</p>
                 </div>
             }
             else
             {
-                <div class="list-group list-group-flush">
+                <ul class="notify-list">
                     @foreach (var n in Model)
                     {
-                        var itemClass = n.IsRead ? "bg-white" : "bg-light";
-                        <a class="list-group-item list-group-item-action p-4 border-bottom @itemClass"
-                           asp-action="Open" asp-route-id="@n.Id">
-                            <div class="d-flex w-100 justify-content-between mb-1">
-                                <h6 class="mb-1 fw-bold @(n.IsRead ? "text-dark" : "text-primary")">
-                                    @if (!n.IsRead) { <span class="badge bg-primary me-2 rounded-pill small" style="font-size: 0.65em; vertical-align: text-top;">NEW</span> }
-                                    @n.Title
-                                </h6>
-                                <small class="text-muted">@n.CreatedAt.ToLocalTime().ToString("MMM dd, HH:mm")</small>
-                            </div>
-                            <p class="mb-1 text-secondary text-break" style="max-width: 90%;">@n.Message</p>
-                        </a>
+                        var unreadClass = n.IsRead ? "" : "unread";
+                        
+                        <!-- Determine icon based on notification context -->
+                        var iconClass = "bi-bell";
+                        if (n.Title.Contains("submitted", StringComparison.OrdinalIgnoreCase))
+                            iconClass = "bi-pencil-square";
+                        else if (n.Title.Contains("status", StringComparison.OrdinalIgnoreCase))
+                            iconClass = "bi-arrow-repeat";
+                        else if (n.Title.Contains("resolved", StringComparison.OrdinalIgnoreCase))
+                            iconClass = "bi-check-circle";
+                        else if (n.Title.Contains("comment", StringComparison.OrdinalIgnoreCase))
+                            iconClass = "bi-chat-dots";
+
+                        <li class="notify-item @unreadClass">
+                            <a asp-action="Open" asp-route-id="@n.Id" style="flex: 1; display: flex; align-items: center; gap: 1rem; text-decoration: none; color: inherit;">
+                                
+                                <!-- Icon Circle -->
+                                <div class="notify-icon">
+                                    <i class="bi @iconClass"></i>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="notify-content" style="flex: 1; min-width: 0;">
+                                    <h5 class="notify-title">
+                                        @if (!n.IsRead)
+                                        {
+                                            <span class="notify-badge"></span>
+                                        }
+                                        @n.Title
+                                    </h5>
+                                    <p class="notify-msg">@n.Message</p>
+                                </div>
+
+                                <!-- Time -->
+                                <div class="notify-time">
+                                    @{
+                                        var notificationDate = n.CreatedAt.ToLocalTime();
+                                        var timeSpan = DateTime.Now - notificationDate;
+                                        
+                                        string timeText;
+                                        if (timeSpan.TotalMinutes < 1)
+                                            timeText = "Just now";
+                                        else if (timeSpan.TotalMinutes < 60)
+                                            timeText = $"{(int)timeSpan.TotalMinutes}m ago";
+                                        else if (timeSpan.TotalHours < 24)
+                                            timeText = $"{(int)timeSpan.TotalHours}h ago";
+                                        else
+                                            timeText = notificationDate.ToString("MMM dd");
+                                    }
+                                    @timeText
+                                </div>
+                            </a>
+                        </li>
                     }
-                </div>
+                </ul>
             }
         </div>
     </div>

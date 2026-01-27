@@ -1,41 +1,42 @@
-ï»¿@model CityCare.Models.ViewModels.CreateIssueViewModel
+@model CityCare.Models.ViewModels.CreateIssueViewModel
 @{
     ViewData["Title"] = "Report New Issue";
 }
 
-<div class="container py-4" style="max-width: 720px;">
-    
-    <div class="mb-4 text-center">
-        <h2 class="fw-bold mb-1">Report an Issue</h2>
-        <p class="text-muted">Help us improve the city by reporting problems you see.</p>
-    </div>
+<div class="citizen-page">
+    <div class="container" style="max-width: 860px;">
+        
+        <div class="text-center mb-4">
+            <h1 class="page-title">Report an Issue</h1>
+            <p class="page-subtitle">Help us improve the city by reporting problems you see.</p>
+        </div>
 
-    <!-- Updated background to light cream color from screenshot -->
-    <div class="card shadow-sm border-0" style="background-color: #FAF7F0;">
-        <div class="card-body p-4 p-lg-5">
+        <div class="form-cc-container">
 
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 
                 @if (!ViewData.ModelState.IsValid)
                 {
-                    <div class="alert alert-danger mb-4" role="alert">
+                    <div class="alert-cc error mb-4">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
                         <div asp-validation-summary="ModelOnly" class="mb-0"></div>
                     </div>
                 }
 
-                <h5 class="mb-3 text-secondary border-bottom pb-2">Issue Details</h5>
+                <!-- Issue Details Section -->
+                <h5 class="form-section-title">Issue Details</h5>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Title</label>
-                    <input asp-for="Title" class="form-control form-control-lg" placeholder="Briefly summarize the issue..." />
+                    <label asp-for="Title" class="form-label-cc">Title</label>
+                    <input asp-for="Title" class="form-control-cc w-100" placeholder="Briefly summarize the issue..." />
                     <span asp-validation-for="Title" class="text-danger small"></span>
                 </div>
 
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Category</label>
-                        <select asp-for="Category" class="form-select" id="Category">
+                        <label asp-for="Category" class="form-label-cc">Category</label>
+                        <select asp-for="Category" class="form-select-cc w-100" id="Category">
                             <option value="">Select Category...</option>
                             @foreach (var c in ViewBag.Categories)
                             {
@@ -46,8 +47,8 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">City</label>
-                        <select asp-for="CityId" class="form-select" id="CityId">
+                        <label asp-for="CityId" class="form-label-cc">City</label>
+                        <select asp-for="CityId" class="form-select-cc w-100" id="CityId">
                             <option value="">Select City...</option>
                             @foreach (var city in ViewBag.Cities)
                             {
@@ -58,42 +59,51 @@
                     </div>
                 </div>
 
-                <div class="mb-4 p-3 bg-light rounded border d-flex align-items-center" id="contactInfoBox" style="display:none;">
+                <!-- Department Contact Info Box -->
+                <div class="info-box-cc mb-4" id="contactInfoBox" style="display:none;">
                     <div class="flex-grow-1">
-                        <label class="small text-muted mb-1 d-block">Department Contact</label>
-                        <div class="fw-bold" id="StaffPhoneDisplay">â€”</div>
-                        <input type="hidden" id="StaffPhone" /> <!-- Hidden as we show it nicely above -->
+                        <span class="info-label">Department Contact</span>
+                        <div class="info-value" id="StaffPhoneDisplay">—</div>
+                        <input type="hidden" id="StaffPhone" />
                     </div>
                     <small id="StaffPhoneHelp" class="text-muted ms-2"></small>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Location</label>
-                    <input asp-for="LocationText" class="form-control" placeholder="Village, Street, or Landmark..." />
-                    <div class="form-text">Be as specific as possible to help us locate the issue.</div>
+                    <label asp-for="LocationText" class="form-label-cc">Location</label>
+                    <input asp-for="LocationText" class="form-control-cc w-100" placeholder="Village, Street, or Landmark..." />
+                    <span class="form-text-cc">Be as specific as possible to help us locate the issue.</span>
                     <span asp-validation-for="LocationText" class="text-danger small"></span>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Description</label>
-                    <textarea asp-for="Description" class="form-control" rows="5"
+                    <label asp-for="Description" class="form-label-cc">Description</label>
+                    <textarea asp-for="Description" class="form-control-cc w-100" rows="5"
                               placeholder="Describe the issue in detail. What is wrong? How does it affect the area?"></textarea>
                     <span asp-validation-for="Description" class="text-danger small"></span>
                 </div>
 
-                <h5 class="mt-5 mb-3 text-secondary border-bottom pb-2">Attachments</h5>
+                <!-- Attachments Section -->
+                <h5 class="form-section-title">Attachments</h5>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Photo Evidence</label>
-                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
-                    <div class="form-text">Supporting images help us prioritize and resolve issues faster. (JPG, PNG, WEBP)</div>
+                    <label asp-for="ImageFile" class="form-label-cc">Photo Evidence</label>
+                    <div class="file-upload-cc" onclick="document.getElementById('ImageFileInput').click();">
+                        <span class="upload-icon">??</span>
+                        <div class="upload-text">Click to upload or drag and drop</div>
+                        <div class="upload-hint">JPG, PNG, WEBP (up to 10MB)</div>
+                    </div>
+                    <input type="file" id="ImageFileInput" asp-for="ImageFile" class="form-control" accept="image/*" style="display:none;" />
+                    <span class="form-text-cc">Supporting images help us prioritize and resolve issues faster.</span>
                     <span asp-validation-for="ImageFile" class="text-danger small"></span>
                 </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
-                    <a class="btn btn-light px-4" asp-action="Dashboard">Cancel</a>
-                    <!-- Changed button class to custom style matching navbar -->
-                    <button class="btn btn-primary px-5 fw-semibold shadow-sm">Submit Report</button>
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 justify-content-end mt-5">
+                    <a class="btn btn-cc-outline" asp-action="Dashboard">Cancel</a>
+                    <button type="submit" class="btn btn-cc-primary">
+                        <i class="bi bi-send"></i> Submit Report
+                    </button>
                 </div>
             </form>
 
@@ -111,16 +121,43 @@
             const phoneDisplayEl = document.getElementById('StaffPhoneDisplay');
             const helpEl = document.getElementById('StaffPhoneHelp');
             const contactBox = document.getElementById('contactInfoBox');
+            const imageInput = document.getElementById('ImageFileInput');
+            const fileUploadBox = document.querySelector('.file-upload-cc');
+
+            // File upload drag and drop
+            fileUploadBox.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadBox.style.borderColor = 'var(--yellow)';
+                fileUploadBox.style.background = 'rgba(255, 196, 0, 0.12)';
+            });
+
+            fileUploadBox.addEventListener('dragleave', () => {
+                fileUploadBox.style.borderColor = 'var(--border)';
+                fileUploadBox.style.background = 'rgba(255, 196, 0, 0.03)';
+            });
+
+            fileUploadBox.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadBox.style.borderColor = 'var(--border)';
+                fileUploadBox.style.background = 'rgba(255, 196, 0, 0.03)';
+                if (e.dataTransfer.files.length > 0) {
+                    imageInput.files = e.dataTransfer.files;
+                }
+            });
+
+            // Update file name on selection
+            imageInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    fileUploadBox.querySelector('.upload-text').textContent = e.target.files[0].name;
+                }
+            });
 
             async function loadPhone() {
                 const category = categoryEl?.value;
                 const cityId = cityEl?.value;
 
-                phoneDisplayEl.textContent = 'â€”';
+                phoneDisplayEl.textContent = '—';
                 helpEl.textContent = '';
-                
-                // Only show box if something is selected, or always show it? 
-                // Let's keep it visible so they know contact info appears here.
 
                 if (!category || !cityId) {
                     phoneDisplayEl.textContent = 'Select Category & City to see contact';
@@ -141,7 +178,7 @@
                     const data = await res.json();
                     if (data && data.staffPhone) {
                         phoneDisplayEl.textContent = data.staffPhone;
-                        helpEl.innerHTML = '<span class="badge bg-success">Available</span>';
+                        helpEl.innerHTML = '<span class="badge-cc" style="background: #DCFCE7; color: #166534; border-color: #BBFBBB;"><i class="bi bi-check-circle"></i> Available</span>';
                     } else {
                         phoneDisplayEl.textContent = 'Not Available';
                         helpEl.textContent = 'No contact number listed.';
@@ -155,10 +192,7 @@
             categoryEl?.addEventListener('change', loadPhone);
             cityEl?.addEventListener('change', loadPhone);
 
-            // contactBox.style.display = 'block'; // Make sure it's visible if using js
-            if(contactBox) contactBox.style.display = 'flex'; // Ensure flex since we used d-flex class but inline style might override
-
-            // initial
+            if(contactBox) contactBox.style.display = 'flex';
             loadPhone();
         })();
     </script>

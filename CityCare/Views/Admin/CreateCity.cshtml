@@ -3,35 +3,43 @@
     ViewData["Title"] = "Create City";
 }
 
-<div class="container py-4" style="max-width:600px;">
-    <h3 class="mb-4">Create New City</h3>
+<div class="admin-page">
+    <div class="container" style="max-width: 600px;">
+        <div class="admin-header mb-4">
+            <h1>Create New City</h1>
+            <p>Add a new city to the system.</p>
+        </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+        <div class="form-cc-container">
             <form asp-action="CreateCity" method="post">
                 @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label">City Name</label>
-                    <input asp-for="Name" class="form-control" placeholder="e.g., Colombo" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label-cc">City Name</label>
+                    <input asp-for="Name" class="form-control-cc w-100" placeholder="e.g., Colombo" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Code" class="form-label">City Code (3 letters)</label>
-                    <input asp-for="Code" class="form-control" placeholder="e.g., CMB" maxlength="10" />
-                    <span asp-validation-for="Code" class="text-danger"></span>
+                <div class="mb-4">
+                    <label asp-for="Code" class="form-label-cc">City Code</label>
+                    <input asp-for="Code" class="form-control-cc w-100" placeholder="e.g., CMB" maxlength="10" />
+                    <span asp-validation-for="Code" class="text-danger small"></span>
+                    <div class="form-text-cc">3-letter code to identify this city (e.g., CMB, MTR)</div>
                 </div>
 
-                <div class="form-check mb-3">
-                    <input asp-for="IsActive" class="form-check-input" checked />
-                    <label asp-for="IsActive" class="form-check-label">Active</label>
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" checked id="IsActive" />
+                        <label asp-for="IsActive" class="form-check-label" for="IsActive">Active</label>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create City</button>
-                    <a asp-action="Cities" class="btn btn-outline-secondary">Cancel</a>
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-action="Cities" class="btn btn-cc-outline">Cancel</a>
+                    <button type="submit" class="btn btn-cc-primary">
+                        <i class="bi bi-plus-lg"></i> Create City
+                    </button>
                 </div>
             </form>
         </div>

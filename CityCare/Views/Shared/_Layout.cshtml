@@ -13,6 +13,13 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CityCare.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+    @{
+        var isCitizenOrStaffPage = !User.IsInRole("Admin");
+    }
+    @if (isCitizenOrStaffPage && User.Identity?.IsAuthenticated == true)
+    {
+        <link rel="stylesheet" href="~/css/citizen-theme.css" asp-append-version="true" />
+    }
 </head>
 
 <body class="app-shell">
@@ -31,7 +38,7 @@
     }
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light brand-gradient-bg">
+        <nav class="navbar navbar-expand-sm navbar-light @(User.IsInRole("Admin") ? "admin-navbar" : "brand-gradient-bg")">
             <div class="container">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
@@ -118,7 +125,7 @@
                             <!-- Bell -->
                             <li class="nav-item me-3 position-relative">
                                 <a class="nav-link" asp-controller="Notification" asp-action="Index" title="Notifications">
-                                    🔔
+                                    <i class="bi bi-bell"></i>
                                     <span id="notificationBadge" class="@(unreadCount > 0 ? "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" : "d-none")">
                                         @unreadCount
                                     </span>
@@ -129,8 +136,8 @@
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        Logout
+                                    <button type="submit" class="btn btn-cc-logout btn-sm">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
                                     </button>
                                 </form>
                             </li>

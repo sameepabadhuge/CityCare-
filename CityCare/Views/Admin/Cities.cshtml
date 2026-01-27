@@ -3,58 +3,89 @@
     ViewData["Title"] = "Manage Cities";
 }
 
-<div class="container py-4">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="admin-page">
+    <div class="container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert-cc success mb-4">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>@TempData["Success"]</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2" style="border-color: var(--border);">
+            <div>
+                <h1 class="page-title">Manage Cities</h1>
+                <p class="page-subtitle">View and manage city locations in the system.</p>
+            </div>
+            <a asp-action="CreateCity" class="btn btn-cc-primary">
+                <i class="bi bi-plus-lg"></i> Add City
+            </a>
         </div>
-    }
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Manage Cities</h3>
-        <a asp-action="CreateCity" class="btn btn-primary">➕ Add City</a>
-    </div>
+        <div class="table-cc-container">
+            <div class="table-cc-header">
+                <h5 class="mb-0" style="color: var(--text); font-weight: 700;">Cities List</h5>
+            </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Code</th>
-                        <th>Status</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var city in Model)
-                    {
-                        <tr>
-                            <td>@city.Name</td>
-                            <td><code>@city.Code</code></td>
-                            <td>
-                                @if (city.IsActive)
-                                {
-                                    <span class="badge bg-success">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Inactive</span>
-                                }
-                            </td>
-                            <td class="text-end">
-                                <a asp-action="EditCity" asp-route-id="@city.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <form asp-action="ToggleCity" asp-route-id="@city.Id" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Toggle</button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            @if (!Model.Any())
+            {
+                <div style="text-align: center; padding: 3rem 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+                    <h5 style="font-weight: 700; color: var(--muted);">No cities found</h5>
+                    <p class="text-muted mb-0">Start by creating your first city.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-cc align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var city in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@city.Name</td>
+                                    <td><code style="background: var(--bg); color: var(--text); padding: 0.25rem 0.5rem; border-radius: 4px;">@city.Code</code></td>
+                                    <td>
+                                        @if (city.IsActive)
+                                        {
+                                            <span class="badge-cc" style="background: #DCFCE7; color: #166534; border-color: #BBFBBB;">
+                                                <i class="bi bi-check-circle"></i> Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-cc" style="background: #FEE2E2; color: #991B1B; border-color: #FECACA;">
+                                                <i class="bi bi-x-circle"></i> Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="EditCity" asp-route-id="@city.Id" class="btn btn-cc-outline btn-sm">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <form asp-action="ToggleCity" asp-route-id="@city.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-cc-outline btn-sm">
+                                                <i class="bi bi-arrow-repeat"></i> Toggle
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>

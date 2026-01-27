@@ -3,102 +3,111 @@
     ViewData["Title"] = "Citizen Dashboard";
 }
 
-<div class="container py-4">
+<div class="container citizen-page">
 
-    @* ✅ Success message after reporting an issue *@
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert-cc success">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>@TempData["Success"]</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <div>
-            <h2 class="fw-bold mb-1">My Complaints</h2>
-            <p class="text-muted mb-0">Track the status of your reported issues</p>
-        </div>
+    <div class="table-cc-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">My Complaints</h1>
+                <p class="page-subtitle">Track the status of your reported issues</p>
+            </div>
 
-        <a class="btn btn-warning text-white fw-semibold px-4 shadow-sm"
-           style="background-color: #eab308; border-color: #eab308;"
-           asp-controller="Issue"
-           asp-action="Create">
-           <i class="bi bi-plus-lg me-1"></i> Report New Issue
-        </a>
+            <a class="btn btn-cc-primary"
+               asp-controller="Issue"
+               asp-action="Create">
+               <i class="bi bi-plus-lg"></i> Report New Issue
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
-            @if (!Model.Issues.Any())
-            {
-                <div class="text-center py-5">
-                    <div class="mb-3 text-muted" style="font-size: 3rem;">📝</div>
-                    <h5 class="fw-bold text-muted">No issues reported yet</h5>
-                    <p class="text-muted mb-4">When you spot a problem in your city, report it here.</p>
-                    <a class="btn btn-outline-warning text-dark fw-semibold" asp-controller="Issue" asp-action="Create">
-                        Report First Issue
-                    </a>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th class="ps-4 py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Title</th>
-                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Category</th>
-                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">City</th>
-                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Dept. Contact</th>
-                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Status</th>
-                                <th class="py-3 text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Date</th>
-                                <th class="pe-4 py-3 text-end text-secondary small fw-bold text-uppercase" style="background-color: #f3f4f6;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Issues)
+    <div class="table-cc-container">
+        @if (!Model.Issues.Any())
+        {
+            <div class="text-center py-5" style="padding: 3rem 1.5rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                <h5 class="fw-bold" style="color: var(--muted);">No issues reported yet</h5>
+                <p class="text-muted mb-4">When you spot a problem in your city, report it here.</p>
+                <a class="btn btn-cc-outline" asp-controller="Issue" asp-action="Create">
+                    <i class="bi bi-pencil-square"></i> Report First Issue
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-cc align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>City</th>
+                            <th>Dept. Contact</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Issues)
+                        {
+                            string badgeClass = item.Status switch
                             {
-                                string badgeClass = item.Status switch
-                                {
-                                    CityCare.Models.Entities.IssueStatus.Pending => "bg-danger",
-                                    CityCare.Models.Entities.IssueStatus.InProgress => "bg-primary",
-                                    CityCare.Models.Entities.IssueStatus.Resolved => "bg-success",
-                                    _ => "bg-secondary"
-                                };
+                                CityCare.Models.Entities.IssueStatus.Pending => "badge-pending",
+                                CityCare.Models.Entities.IssueStatus.InProgress => "badge-inprogress",
+                                CityCare.Models.Entities.IssueStatus.Resolved => "badge-resolved",
+                                _ => "badge-pending"
+                            };
 
-                                <tr>
-                                    <td class="ps-4 fw-semibold text-dark">@item.Title</td>
-                                    <td><span class="badge bg-light text-dark border">@item.Category</span></td>
-                                    <td>@item.City?.Name</td>
-                                    <td>
-                                        @if (!string.IsNullOrWhiteSpace(item.ContactPhone))
-                                        {
-                                            <a href="tel:@item.ContactPhone" class="text-decoration-none">@item.ContactPhone</a>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted small">—</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill @badgeClass px-3">@item.Status</span>
-                                    </td>
-                                    <td class="text-muted small">@item.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</td>
-                                    <td class="pe-4 text-end">
-                                        <a class="btn btn-sm btn-light text-primary fw-medium"
-                                           asp-controller="Issue"
-                                           asp-action="Details"
-                                           asp-route-id="@item.Id">
-                                            View Details
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
+                            string badgeIcon = item.Status switch
+                            {
+                                CityCare.Models.Entities.IssueStatus.Pending => "bi-hourglass-split",
+                                CityCare.Models.Entities.IssueStatus.InProgress => "bi-arrow-repeat",
+                                CityCare.Models.Entities.IssueStatus.Resolved => "bi-check-circle-fill",
+                                _ => "bi-question-circle"
+                            };
+
+                            <tr>
+                                <td class="fw-semibold">@item.Title</td>
+                                <td><span class="badge-category">@item.Category</span></td>
+                                <td>@item.City?.Name</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.ContactPhone))
+                                    {
+                                        <a href="tel:@item.ContactPhone" class="text-decoration-none">@item.ContactPhone</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge-cc @badgeClass">
+                                        <i class="bi @badgeIcon"></i> @item.Status
+                                    </span>
+                                </td>
+                                <td class="text-muted small">@item.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</td>
+                                <td class="text-end">
+                                    <a class="btn btn-cc-outline btn-sm"
+                                       asp-controller="Issue"
+                                       asp-action="Details"
+                                       asp-route-id="@item.Id">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>

@@ -3,129 +3,79 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container py-4">
-    <div class="mb-4">
-        <h2 class="fw-bold mb-1">Admin Overview</h2>
-        <p class="text-muted">Manage system data and settings.</p>
-    </div>
+<div class="admin-page">
+    <div class="container">
 
-    <div class="row g-4 mb-5">
-        <!-- Cities Card -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-primary bg-opacity-10 text-primary rounded p-3 me-3">
-                            <i class="bi bi-buildings fs-4"></i>
-                        </div>
-                        <div>
-                            <h5 class="card-title fw-bold mb-0">Cities</h5>
-                            <small class="text-muted">Locations served</small>
-                        </div>
+        <div class="admin-header mb-4">
+            <h1 class="mb-1">Admin Overview</h1>
+            <p>Manage system data and settings.</p>
+        </div>
+
+        <div class="stat-grid mb-4">
+            <!-- Cities Card -->
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <p class="stat-title">Cities</p>
+                        <p class="stat-sub">Locations served</p>
                     </div>
-                    
-                    <div class="mt-auto">
-                        <div class="d-flex align-items-baseline gap-2 mb-3">
-                            <h2 class="fw-bold mb-0">@Model.TotalCities</h2>
-                            <span class="text-muted small">total</span>
-                        </div>
-                        <div class="d-grid">
-                            <a asp-action="Cities" class="btn btn-outline-primary btn-sm fw-semibold">Manage Cities</a>
-                        </div>
+                    <div class="stat-icon">🏙️</div>
+                </div>
+
+                <div class="d-flex align-items-end justify-content-between mt-3">
+                    <p class="stat-number">@Model.TotalCities</p>
+                    <a asp-action="Cities" class="btn btn-cc-primary">Manage</a>
+                </div>
+            </div>
+
+            <!-- Departments Card -->
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <p class="stat-title">Departments</p>
+                        <p class="stat-sub">Organizational units</p>
                     </div>
+                    <div class="stat-icon">🏢</div>
+                </div>
+
+                <div class="d-flex align-items-end justify-content-between mt-3">
+                    <p class="stat-number">@Model.TotalDepartments</p>
+                    <a asp-action="Departments" class="btn btn-cc-primary">Manage</a>
+                </div>
+            </div>
+
+            <!-- Staff Access Card -->
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <p class="stat-title">Staff Access</p>
+                        <p class="stat-sub">Access codes generated</p>
+                    </div>
+                    <div class="stat-icon">🪪</div>
+                </div>
+
+                <div class="d-flex align-items-end justify-content-between mt-3">
+                    <p class="stat-number">@Model.TotalStaffCodes</p>
+                    <a asp-action="StaffCodes" class="btn btn-cc-primary">Manage</a>
                 </div>
             </div>
         </div>
 
-        <!-- Departments Card -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-success bg-opacity-10 text-success rounded p-3 me-3">
-                             <i class="bi bi-building-gear fs-4"></i>
-                        </div>
-                        <div>
-                            <h5 class="card-title fw-bold mb-0">Departments</h5>
-                            <small class="text-muted">Organizational units</small>
-                        </div>
-                    </div>
+        <!-- Quick Actions -->
+        <div class="quick-actions-section">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <p class="quick-actions-title">Quick Actions</p>
+                    <p class="quick-actions-subtitle">Common tasks (faster workflow)</p>
+                </div>
 
-                    <div class="mt-auto">
-                        <div class="d-flex align-items-baseline gap-2 mb-3">
-                            <h2 class="fw-bold mb-0">@Model.TotalDepartments</h2>
-                            <span class="text-muted small">total</span>
-                        </div>
-                        <div class="d-grid">
-                            <a asp-action="Departments" class="btn btn-outline-success btn-sm fw-semibold">Manage Departments</a>
-                        </div>
-                    </div>
+                <div class="quick-actions-buttons">
+                    <a asp-action="CreateCity" class="btn btn-cc-primary">+ Add City</a>
+                    <a asp-action="CreateDepartment" class="btn btn-cc-primary">+ Add Department</a>
+                    <a asp-action="CreateStaffCode" class="btn btn-cc-primary">⚡ Generate Code</a>
                 </div>
             </div>
         </div>
 
-        <!-- Staff Codes Card -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-info bg-opacity-10 text-info rounded p-3 me-3">
-                             <i class="bi bi-person-badge fs-4"></i>
-                        </div>
-                        <div>
-                            <h5 class="card-title fw-bold mb-0">Staff Access</h5>
-                            <small class="text-muted">Access codes generated</small>
-                        </div>
-                    </div>
-
-                    <div class="mt-auto">
-                        <div class="d-flex align-items-baseline gap-2 mb-3">
-                            <h2 class="fw-bold mb-0">@Model.TotalStaffCodes</h2>
-                            <span class="text-muted small">codes</span>
-                        </div>
-                        <div class="d-grid">
-                            <a asp-action="StaffCodes" class="btn btn-outline-info btn-sm fw-semibold">Manage Codes</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 border-0">
-            <h5 class="fw-bold mb-0">Quick Management</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="list-group list-group-flush">
-                <a asp-action="CreateCity" class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3">
-                    <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        ➕
-                    </div>
-                    <div>
-                        <div class="fw-semibold">Add New City</div>
-                        <div class="small text-muted">Register a new city to the system</div>
-                    </div>
-                </a>
-                <a asp-action="CreateDepartment" class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3">
-                    <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        ➕
-                    </div>
-                    <div>
-                        <div class="fw-semibold">Add New Department</div>
-                        <div class="small text-muted">Create a new department category</div>
-                    </div>
-                </a>
-                <a asp-action="CreateStaffCode" class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3">
-                     <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        🔑
-                    </div>
-                    <div>
-                        <div class="fw-semibold">Generate Staff Code</div>
-                        <div class="small text-muted">Create access codes for new staff members</div>
-                    </div>
-                </a>
-            </div>
-        </div>
     </div>
 </div>

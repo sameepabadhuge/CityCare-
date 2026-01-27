@@ -1,3 +1,16 @@
+/* Modern Color System */
+:root {
+  --navy: #0B2A4A;
+  --navy-2: #123B63;
+  --yellow: #FFC400;
+  --yellow-2: #FFB300;
+  --bg: #F6F8FB;
+  --text: #0F172A;
+  --muted: #64748B;
+  --card: #FFFFFF;
+  --border: #E6EAF2;
+}
+
 html {
   font-size: 14px;
 }
@@ -10,6 +23,12 @@ html {
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Accessibility: consistent focus */
+:focus-visible {
+  outline: 3px solid rgba(255, 196, 0, 0.55);
+  outline-offset: 2px;
 }
 
 html {
@@ -26,6 +45,9 @@ body {
 body.public-layout {
   background: radial-gradient(circle at 50% 35%, #0f2f80 0%, #081a4a 55%, #020818 100%);
   color: #f6fbff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 body.app-shell {
@@ -40,14 +62,18 @@ body.app-shell > header {
 
 body.app-shell > .container {
   flex: 1 0 auto;
-}
-
-body.app-shell > footer {
-  flex-shrink: 0;
+  width: 100%;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 body.app-shell main {
-  min-height: 100%;
+  min-height: auto;
+}
+
+main {
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 .soft-gray-bg {
@@ -60,6 +86,77 @@ body.app-shell main {
   color: #1f2937;
 }
 
+/* ============================================
+   PUBLIC NAVBAR STYLES
+   ============================================ */
+
+.public-navbar {
+  background: linear-gradient(90deg, #0a2a5e 0%, #0f3d7f 50%, #081a4a 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.public-navbar .navbar-brand {
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 1.35rem;
+  transition: all 0.3s ease;
+}
+
+.public-navbar .navbar-brand:hover {
+  color: #e0f2fe !important;
+}
+
+.public-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.public-navbar .nav-link:hover {
+  color: #ffffff !important;
+}
+
+.public-navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.public-navbar .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ============================================
+   PUBLIC FOOTER STYLES
+   ============================================ */
+
+.public-footer {
+  background: linear-gradient(90deg, #0a2a5e 0%, #0f3d7f 50%, #081a4a 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem 0;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.public-footer .footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+}
+
+.public-footer a {
+  transition: color 0.3s ease;
+}
+
+.public-footer a:hover {
+  color: #ffffff !important;
+}
+
+/* ============================================
+   ADMIN NAVBAR & FOOTER
+   ============================================ */
+
 .brand-gradient-bg {
   background: #0000AA !important;
   color: #f2f6ff;
@@ -71,13 +168,14 @@ body.app-shell main {
 }
 
 .footer {
-  height: 70px;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1.5rem;
+  padding: 1.5rem;
   margin-top: auto;
   background: transparent;
+  min-height: 60px;
 }
 
 .footer .footer-content {
@@ -85,6 +183,7 @@ body.app-shell main {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.95rem;
 }
 
 .brand-gradient-bg .navbar-brand span,
@@ -138,29 +237,271 @@ body.app-shell main {
     filter: invert(1) grayscale(1) brightness(2);
 }
 
-body.public-layout header,
-body.public-layout header .navbar {
-  border: 0 !important;
-  box-shadow: none !important;
+/* Modern Navy Navbar - OVERRIDE for Admin */
+.admin-navbar.navbar {
+  background: var(--navy) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-body.public-layout header .navbar::after,
-body.public-layout header .navbar::before {
-  content: none !important;
+.admin-navbar.navbar .navbar-brand {
+  color: #EAF2FF !important;
 }
 
-body.public-layout header + .container,
-body.public-layout main,
-body.public-layout .container {
-  border-top: 0 !important;
+.admin-navbar.navbar .nav-link {
+  color: #EAF2FF !important;
 }
 
-body.public-layout hr {
-  border: 0 !important;
+.admin-navbar.navbar .nav-link:hover {
+  color: #FFFFFF !important;
 }
 
-body.app-shell footer,
-footer.footer {
-  border-top: 0 !important;
-  box-shadow: none !important;
+.admin-navbar.navbar .nav-link.active {
+  position: relative;
+  color: #FFFFFF !important;
+}
+
+.admin-navbar.navbar .nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: -0.5rem;
+  height: 3px;
+  background: var(--yellow);
+  border-radius: 999px;
+}
+
+.admin-navbar.navbar .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.admin-navbar.navbar .navbar-toggler-icon {
+    filter: invert(1) grayscale(1) brightness(2);
+}
+
+.admin-navbar.navbar .dropdown-menu {
+  background: #fff;
+  border-color: var(--border);
+}
+
+.admin-navbar.navbar .dropdown-menu .dropdown-item {
+  color: var(--text);
+}
+
+.admin-navbar.navbar .dropdown-menu .dropdown-item:hover,
+.admin-navbar.navbar .dropdown-menu .dropdown-item:focus {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.btn-primary-cc {
+  background: var(--yellow);
+  border: none;
+  color: #1A1A1A;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.625rem 1rem;
+  transition: background 0.15s ease;
+}
+
+.btn-primary-cc:hover {
+  background: var(--yellow-2);
+  color: #1A1A1A;
+  text-decoration: none;
+}
+
+.btn-primary-cc:focus {
+  color: #1A1A1A;
+  background: var(--yellow-2);
+  outline: 3px solid rgba(255, 196, 0, 0.55);
+  outline-offset: 2px;
+}
+
+/* Alias for consistency across all pages */
+.btn-cc-primary {
+  background: var(--yellow);
+  border: none;
+  color: #1A1A1A;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.625rem 1rem;
+  transition: background 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-cc-primary:hover {
+  background: var(--yellow-2);
+  color: #1A1A1A;
+  text-decoration: none;
+}
+
+.btn-cc-primary:focus {
+  color: #1A1A1A;
+  background: var(--yellow-2);
+  outline: 3px solid rgba(255, 196, 0, 0.55);
+  outline-offset: 2px;
+}
+
+.quick-actions-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.quick-actions-title {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.quick-actions-subtitle {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-bottom: 1.5rem;
+}
+
+.quick-actions-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 576px) {
+  .quick-actions-buttons {
+    flex-direction: column;
+  }
+
+  .quick-actions-buttons .btn {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   ADMIN DASHBOARD STYLES (Modern + HCI)
+   ============================================ */
+
+.admin-page {
+  background: var(--bg);
+  min-height: auto;
+  padding: 2rem 0;
+}
+
+.admin-header h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.admin-header p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.10);
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 196, 0, 0.18);
+  border: 1px solid rgba(255, 196, 0, 0.35);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.stat-title {
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+}
+
+.stat-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0.75rem 0 0 0;
+  color: var(--text);
+}
+
+/* ============================================
+   LOGOUT BUTTON STYLING
+   ============================================ */
+
+.btn-cc-logout {
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
+  background: transparent !important;
+  transition: all 0.15s ease;
+}
+
+.brand-gradient-bg .btn-cc-logout:hover {
+  border-color: var(--yellow) !important;
+  color: var(--yellow) !important;
+  background: rgba(255, 196, 0, 0.1) !important;
+}
+
+.admin-navbar .btn-cc-logout:hover {
+  border-color: var(--yellow) !important;
+  color: var(--yellow) !important;
+  background: rgba(255, 196, 0, 0.1) !important;
+}
+
+.btn-cc-logout:focus {
+  outline: 3px solid rgba(255, 196, 0, 0.55);
+  outline-offset: 2px;
+}
+
+/* Old btn-logout class (deprecated) */
+.btn-logout {
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
+  background: transparent !important;
+}
+
+.btn-logout:hover {
+  border-color: var(--yellow) !important;
+  color: var(--yellow) !important;
 }

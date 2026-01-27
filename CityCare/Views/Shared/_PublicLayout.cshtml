@@ -18,40 +18,52 @@
         : $"app-shell {extraBodyClass}";
 }
 <body class="@bodyClass">
-    <!-- ✅ Public Navbar (only logo + name) -->
+    <!-- Public Navbar -->
     <header>
-        <nav class="navbar navbar-light brand-gradient-bg">
+        <nav class="navbar navbar-expand-lg navbar-light public-navbar">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-2"
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold"
                    asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 60px;" />
-                    <strong>CityCare</strong>
+                    <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 45px;" />
+                    <span>CityCare</span>
                 </a>
 
-                <!-- Optional: show Get Started button only on Landing page -->
-                @if (ViewData["ShowGetStarted"] as bool? == true)
-                {
-                    <a class="btn btn-primary btn-sm"
-                       asp-controller="Account"
-                       asp-action="Login">
-                        Get Started
-                    </a>
-                }
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        <a class="nav-link fw-semibold"
+                           asp-controller="Account"
+                           asp-action="Login">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                        </a>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main">
+        @RenderBody()
+    </main>
 
-    <footer class="border-top footer text-muted brand-gradient-footer">
+    <footer class="public-footer text-white-50 mt-auto">
         <div class="container footer-content">
-             &copy; 2026 - CityCare
-         </div>
-     </footer>
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 small">&copy; @DateTime.Now.Year CityCare. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <p class="mb-0 small">
+                        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy</a>
+                        <a href="#" class="text-white-50 text-decoration-none">Terms</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

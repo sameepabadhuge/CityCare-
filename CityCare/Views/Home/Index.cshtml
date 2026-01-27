@@ -4,28 +4,138 @@
     ViewData["BodyClass"] = "public-layout";
 }
 
-<div class="landing-hero min-vh-100 d-flex flex-column justify-content-center">
-    <div class="container py-5">
-        <div class="row justify-content-center text-center">
+<div class="landing-page">
+    <!-- Hero Section -->
+    <div class="landing-hero min-vh-100 d-flex flex-column justify-content-center position-relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="hero-decoration"></div>
+        
+        <div class="container py-5 position-relative z-3">
+            <div class="row justify-content-center text-center">
+                <div class="col-12 col-lg-10">
+                    <div class="hero-content">
+                        <h1 class="fw-bold display-3 text-white mb-3 hero-title">
+                            Welcome to <span class="hero-accent">CityCare</span>
+                        </h1>
 
-            <div class="col-12 col-lg-8">
-                <h1 class="fw-bold display-4 text-white mb-3">
-                    Welcome to CityCare
-                </h1>
+                        <p class="fs-5 text-white-50 mb-5 hero-subtitle">
+                            Together, we care for the City. Report, track, and resolve urban issues collaboratively.
+                        </p>
 
-                <p class="fs-4 text-white-50 mb-5">
-                    Together, we care for the City.
-                </p>
-
-                <div class="d-flex justify-content-center gap-3">
-                    <a class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg"
-                       asp-controller="Account"
-                       asp-action="Login">
-                        Get Started
-                    </a>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap mb-5">
+                            <a class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg hero-btn-primary"
+                               asp-controller="Account"
+                               asp-action="Login">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Get Started
+                            </a>
+                            <button class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill shadow-lg hero-btn-secondary" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#learnMoreModal">
+                                <i class="bi bi-info-circle me-2"></i>Learn More
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <!-- Features Section -->
+    <section class="features-section py-5 position-relative z-2">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <h5 class="fw-bold mt-3 mb-2">Report Issues</h5>
+                        <p class="text-muted small">Easily report urban issues in your city with detailed descriptions and photos.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-eye"></i>
+                        </div>
+                        <h5 class="fw-bold mt-3 mb-2">Track Progress</h5>
+                        <p class="text-muted small">Monitor the status of reported issues in real-time from submission to resolution.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h5 class="fw-bold mt-3 mb-2">Community Drive</h5>
+                        <p class="text-muted small">Join thousands of citizens working together to improve our cities.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h5 class="fw-bold mt-3 mb-2">Secure & Reliable</h5>
+                        <p class="text-muted small">Your data is protected with enterprise-grade security measures.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5 position-relative">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-12 col-lg-8">
+                    <div class="cta-card">
+                        <h2 class="fw-bold mb-3">Ready to Make a Difference?</h2>
+                        <p class="text-muted mb-4">Join as a citizen or staff member and help improve our city.</p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a class="btn btn-primary btn-lg px-4 py-2 fw-bold rounded-pill"
+                               asp-controller="Account"
+                               asp-action="CitizenRegister">
+                                <i class="bi bi-person-plus me-2"></i>Citizen Sign Up
+                            </a>
+                            <a class="btn btn-outline-primary btn-lg px-4 py-2 fw-bold rounded-pill"
+                               asp-controller="Account"
+                               asp-action="StaffRegister">
+                                <i class="bi bi-briefcase me-2"></i>Staff Sign Up
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Learn More Modal -->
+<div class="modal fade" id="learnMoreModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">About CityCare</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">
+                    CityCare is a collaborative platform designed to bridge the gap between citizens and government departments.
+                </p>
+                <h6 class="fw-bold mb-2">Key Features:</h6>
+                <ul class="small mb-3">
+                    <li><strong>For Citizens:</strong> Report municipal issues, track progress, and contribute to city improvement</li>
+                    <li><strong>For Staff:</strong> Manage reported issues, coordinate responses, and update status</li>
+                    <li><strong>For Admins:</strong> Oversee system operations, manage departments, and generate reports</li>
+                </ul>
+                <p class="text-muted small">
+                    Together, we create more responsive and accountable cities by empowering citizens and streamlining municipal services.
+                </p>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

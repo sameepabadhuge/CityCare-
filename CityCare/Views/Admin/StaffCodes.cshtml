@@ -3,25 +3,46 @@
     ViewData["Title"] = "Staff Access Codes";
 }
 
-<div class="container py-4">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="admin-page">
+    <div class="container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert-cc success mb-4">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>@TempData["Success"]</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2"
+             style="border-color: var(--border);">
+            <div>
+                <h1 class="page-title">Staff Access Codes</h1>
+                <p class="page-subtitle">Generate and manage staff registration codes.</p>
+            </div>
+            <a asp-action="CreateStaffCode" class="btn btn-cc-primary">
+                <i class="bi bi-key"></i> Generate New Code
+            </a>
         </div>
-    }
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Staff Access Codes</h3>
-        <a asp-action="CreateStaffCode" class="btn btn-primary">➕ Generate New Code</a>
-    </div>
+        <div class="table-cc-container">
+            <div class="table-cc-header">
+                <h5 class="mb-0" style="color: var(--text); font-weight: 700;">Access Codes List</h5>
+            </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
+            @if (!Model.Any())
+            {
+                <div style="text-align: center; padding: 3rem 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+                    <h5 style="font-weight: 700; color: var(--muted);">No access codes found</h5>
+                    <p class="text-muted mb-0">Start by generating your first access code.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-cc align-middle mb-0">
+                        <thead>
                         <tr>
                             <th>City</th>
                             <th>Department</th>
@@ -30,50 +51,61 @@
                             <th>Status</th>
                             <th class="text-end">Actions</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.City?.Name</td>
+                                <td class="fw-semibold">@item.City?.Name</td>
                                 <td>@item.Department?.Name</td>
                                 <td>
-                                    <code>@item.Code</code>
+                                    <code style="background: var(--bg); color: var(--text); padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">@item.Code</code>
                                     <button type="button"
-                                            class="btn btn-sm btn-outline-secondary ms-2"
-                                            onclick="navigator.clipboard.writeText('@item.Code')">
-                                        📋 Copy
+                                            class="btn btn-cc-outline btn-sm ms-2"
+                                            onclick="navigator.clipboard.writeText('@item.Code'); alert('Code copied!');">
+                                        <i class="bi bi-clipboard"></i> Copy
                                     </button>
                                 </td>
                                 <td>@item.Year</td>
                                 <td>
                                     @if (item.IsActive)
                                     {
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="badge-cc"
+                                              style="background: #DCFCE7; color: #166534; border-color: #BBFBBB;">
+                                            <i class="bi bi-check-circle"></i> Active
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">Inactive</span>
+                                        <span class="badge-cc"
+                                              style="background: #FEE2E2; color: #991B1B; border-color: #FECACA;">
+                                            <i class="bi bi-x-circle"></i> Inactive
+                                        </span>
                                     }
                                 </td>
                                 <td class="text-end">
                                     <form asp-action="ToggleCode" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">Toggle</button>
+                                        <button type="submit" class="btn btn-cc-outline btn-sm">
+                                            <i class="bi bi-arrow-repeat"></i> Toggle
+                                        </button>
                                     </form>
                                     <form asp-action="DeleteCode" method="post" class="d-inline"
                                           onsubmit="return confirm('Are you sure you want to delete this code?')">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        <button type="submit" class="btn btn-cc-outline btn-sm" title="Delete this code">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>
