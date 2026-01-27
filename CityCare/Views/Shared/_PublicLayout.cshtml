@@ -12,32 +12,53 @@
 </head>
 
 @{
-    var extraBodyClass = ViewData["BodyClass"] as string;
-    var bodyClass = string.IsNullOrWhiteSpace(extraBodyClass)
-        ? "app-shell"
-        : $"app-shell {extraBodyClass}";
+        var extraBodyClass = ViewData["BodyClass"] as string;
+        var bodyClass = string.IsNullOrWhiteSpace(extraBodyClass)
+                ? "app-shell"
+                : $"app-shell {extraBodyClass}";
+
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+        var action = ViewContext.RouteData.Values["action"]?.ToString();
+        var isLanding = controller == "Home" && action == "Index";
 }
+
 <body class="@bodyClass">
-    <!-- Public Navbar -->
+    <!-- ✅ Public Navbar (use same style as whole project) -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light public-navbar">
+        <nav class="navbar navbar-expand-lg navbar-light brand-gradient-bg">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold"
+                <a class="navbar-brand d-flex align-items-center gap-2"
                    asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 45px;" />
+                    <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 44px; width:auto;" />
                     <span>CityCare</span>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav"
+                        aria-controls="publicNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <div class="ms-auto d-flex align-items-center gap-3">
-                        <a class="nav-link fw-semibold"
-                           asp-controller="Account"
-                           asp-action="Login">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                <div class="collapse navbar-collapse" id="publicNav">
+                    <!-- LEFT -->
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
+                        </li>
+                    </ul>
+
+                    <!-- RIGHT -->
+                    <div class="d-flex align-items-center gap-2">
+                        <a class="btn btn-outline-light"
+                           asp-controller="Account" asp-action="Login">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </a>
+
+                        <a class="btn btn-warning fw-semibold"
+                           asp-controller="Account" asp-action="CitizenRegister">
+                            <i class="bi bi-person-plus me-1"></i> Register
                         </a>
                     </div>
                 </div>
@@ -45,25 +66,95 @@
         </nav>
     </header>
 
+    <!-- ✅ Keep your pages content unchanged -->
     <main role="main">
         @RenderBody()
     </main>
 
-    <footer class="public-footer text-white-50 mt-auto">
-        <div class="container footer-content">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 small">&copy; @DateTime.Now.Year CityCare. All rights reserved.</p>
+    <!-- ✅ Footer logic:
+       - Landing page gets BIG project footer
+       - Other public pages get SMALL footer -->
+    @if (isLanding)
+    {
+        <footer class="public-footer mt-5">
+            <div class="container py-5">
+                <div class="row g-4">
+                    <!-- Brand + description -->
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <img src="~/images/logo.png" asp-append-version="true" alt="CityCare Logo" style="height: 40px;" />
+                            <h5 class="mb-0 text-white">CityCare</h5>
+                        </div>
+                        <p class="text-white-50 small mb-0">
+                            CityCare is a web-based smart city issue reporting system that helps citizens report city problems
+                            and helps municipal staff manage, track, and resolve them efficiently.
+                        </p>
+                    </div>
+
+                    <!-- Links -->
+                    <div class="col-md-2">
+                        <h6 class="text-white">Project</h6>
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-1">
+                                <a class="text-white-50 text-decoration-none" asp-controller="Home" asp-action="About">About</a>
+                            </li>
+                            <li class="mb-1">
+                                <a class="text-white-50 text-decoration-none" asp-controller="Account" asp-action="Login">Sign In</a>
+                            </li>
+                            <li>
+                                <a class="text-white-50 text-decoration-none" asp-controller="Account" asp-action="CitizenRegister">Register</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="col-md-3">
+                        <h6 class="text-white">Features</h6>
+                        <ul class="list-unstyled small mb-0 text-white-50">
+                            <li class="mb-1">Report Issues + Evidence Upload</li>
+                            <li class="mb-1">Real-time Status Tracking</li>
+                            <li class="mb-1">Notifications</li>
+                            <li>Admin & Staff Dashboards</li>
+                        </ul>
+                    </div>
+
+                    <!-- Support -->
+                    <div class="col-md-3">
+                        <h6 class="text-white">Support</h6>
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-1">
+                                <a class="text-white-50 text-decoration-none" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            <li>
+                                <a class="text-white-50 text-decoration-none" href="#">Terms</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+
+                <hr class="border-light opacity-25 my-4" />
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                    <p class="mb-0 small text-white-50">&copy; @DateTime.Now.Year CityCare. All rights reserved.</p>
+                    <p class="mb-0 small text-white-50">Navy + Yellow UI system</p>
+                </div>
+            </div>
+        </footer>
+    }
+    else
+    {
+        <footer class="public-footer text-white-50 mt-auto">
+            <div class="container py-3">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                    <p class="mb-0 small">&copy; @DateTime.Now.Year CityCare. All rights reserved.</p>
                     <p class="mb-0 small">
-                        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy</a>
+                        <a asp-controller="Home" asp-action="Privacy" class="text-white-50 text-decoration-none me-3">Privacy</a>
                         <a href="#" class="text-white-50 text-decoration-none">Terms</a>
                     </p>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
+    }
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

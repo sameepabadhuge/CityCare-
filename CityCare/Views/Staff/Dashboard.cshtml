@@ -22,22 +22,22 @@
 
             <a class="btn @(active == "all" ? "btn-cc-primary" : "btn-cc-outline")"
                asp-action="Dashboard" asp-route-filter="all">
-               <i class="bi bi-list-ul"></i> All Issues
+                <i class="bi bi-list-ul"></i> All Issues
             </a>
 
             <a class="btn @(active == "pending" ? "btn-cc-primary" : "btn-cc-outline")"
                asp-action="Dashboard" asp-route-filter="pending">
-               <i class="bi bi-hourglass-split"></i> Pending
+                <i class="bi bi-hourglass-split"></i> Pending
             </a>
 
             <a class="btn @(active == "inprogress" ? "btn-cc-primary" : "btn-cc-outline")"
                asp-action="Dashboard" asp-route-filter="inprogress">
-               <i class="bi bi-arrow-repeat"></i> In Progress
+                <i class="bi bi-arrow-repeat"></i> In Progress
             </a>
 
             <a class="btn @(active == "resolved" ? "btn-cc-primary" : "btn-cc-outline")"
                asp-action="Dashboard" asp-route-filter="resolved">
-               <i class="bi bi-check-circle"></i> Resolved
+                <i class="bi bi-check-circle"></i> Resolved
             </a>
         </div>
     </div>
@@ -48,7 +48,7 @@
             <h5 class="mb-0" style="color: var(--text); font-weight: 700;">Issue List</h5>
         </div>
 
-        @if (!Model.Issues.Any())
+        @if (Model.Issues == null || !Model.Issues.Any())
         {
             <div style="text-align: center; padding: 3rem 1.5rem;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
@@ -74,21 +74,25 @@
                     <tbody>
                         @foreach (var item in Model.Issues)
                         {
-                            string badgeClass = item.Status switch
-                            {
-                                CityCare.Models.Entities.IssueStatus.Pending => "badge-pending",
-                                CityCare.Models.Entities.IssueStatus.InProgress => "badge-inprogress",
-                                CityCare.Models.Entities.IssueStatus.Resolved => "badge-resolved",
-                                _ => "badge-pending"
-                            };
+                            // ✅ FIX: no switch-expression + no stray "w"
+                            string badgeClass = "badge-pending";
+                            string statusIcon = "bi-question-circle";
 
-                            string statusIcon = item.Status switch
+                            if (item.Status == CityCare.Models.Entities.IssueStatus.Pending)
                             {
-                                CityCare.Models.Entities.IssueStatus.Pending => "bi-hourglass-split",
-                                CityCare.Models.Entities.IssueStatus.InProgress => "bi-arrow-repeat",
-                                CityCare.Models.Entities.IssueStatus.Resolved => "bi-check-circle-fill",
-                                _ => "bi-question-circle"
-                            };
+                                badgeClass = "badge-pending";
+                                statusIcon = "bi-hourglass-split";
+                            }
+                            else if (item.Status == CityCare.Models.Entities.IssueStatus.InProgress)
+                            {
+                                badgeClass = "badge-inprogress";
+                                statusIcon = "bi-arrow-repeat";
+                            }
+                            else if (item.Status == CityCare.Models.Entities.IssueStatus.Resolved)
+                            {
+                                badgeClass = "badge-resolved";
+                                statusIcon = "bi-check-circle-fill";
+                            }
 
                             <tr>
                                 <td class="fw-semibold">@item.Title</td>

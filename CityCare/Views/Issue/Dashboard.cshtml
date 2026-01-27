@@ -24,7 +24,7 @@
             <a class="btn btn-cc-primary"
                asp-controller="Issue"
                asp-action="Create">
-               <i class="bi bi-plus-lg"></i> Report New Issue
+                <i class="bi bi-plus-lg"></i> Report New Issue
             </a>
         </div>
     </div>
@@ -59,21 +59,25 @@
                     <tbody>
                         @foreach (var item in Model.Issues)
                         {
-                            string badgeClass = item.Status switch
-                            {
-                                CityCare.Models.Entities.IssueStatus.Pending => "badge-pending",
-                                CityCare.Models.Entities.IssueStatus.InProgress => "badge-inprogress",
-                                CityCare.Models.Entities.IssueStatus.Resolved => "badge-resolved",
-                                _ => "badge-pending"
-                            };
+                            // ✅ FIX: Replace switch-expression with safe if/else block
+                            string badgeClass = "badge-pending";
+                            string badgeIcon = "bi-question-circle";
 
-                            string badgeIcon = item.Status switch
+                            if (item.Status == CityCare.Models.Entities.IssueStatus.Pending)
                             {
-                                CityCare.Models.Entities.IssueStatus.Pending => "bi-hourglass-split",
-                                CityCare.Models.Entities.IssueStatus.InProgress => "bi-arrow-repeat",
-                                CityCare.Models.Entities.IssueStatus.Resolved => "bi-check-circle-fill",
-                                _ => "bi-question-circle"
-                            };
+                                badgeClass = "badge-pending";
+                                badgeIcon = "bi-hourglass-split";
+                            }
+                            else if (item.Status == CityCare.Models.Entities.IssueStatus.InProgress)
+                            {
+                                badgeClass = "badge-inprogress";
+                                badgeIcon = "bi-arrow-repeat";
+                            }
+                            else if (item.Status == CityCare.Models.Entities.IssueStatus.Resolved)
+                            {
+                                badgeClass = "badge-resolved";
+                                badgeIcon = "bi-check-circle-fill";
+                            }
 
                             <tr>
                                 <td class="fw-semibold">@item.Title</td>
