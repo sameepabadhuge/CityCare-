@@ -1,14 +1,19 @@
+﻿/* ============================================
+   CITYCARE – LANDING PAGE (NAVY + YELLOW)
+   ============================================ */
+
 :root {
     --citycare-sky: #00008b;
     --citycare-sky-dark: #00014a;
-    --citycare-sky-light: #2f85ff;
-
+    /* Brand Yellow */
+    --citycare-accent: #FFC400;
+    --citycare-accent-2: #FFB300;
     --citycare-auth-card-bg: #ffffff;
     --citycare-auth-accent: #0a2a6a;
 }
 
 /* ============================================
-   LANDING PAGE STYLES
+   BASE
    ============================================ */
 
 body.public-layout main {
@@ -19,6 +24,10 @@ body.public-layout main {
     width: 100%;
 }
 
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
 .landing-hero {
     color: #fff;
     padding: 60px 0;
@@ -26,70 +35,16 @@ body.public-layout main {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
     position: relative;
 }
 
+/* Yellow glow */
 .hero-decoration {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 70% 30%, rgba(47, 133, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 20% 70%, rgba(47, 133, 255, 0.1) 0%, transparent 50%);
+    inset: 0;
+    background: radial-gradient(circle at 70% 30%, rgba(255, 196, 0, 0.15) 0%, transparent 50%), radial-gradient(circle at 20% 70%, rgba(255, 196, 0, 0.10) 0%, transparent 50%);
     pointer-events: none;
     z-index: 1;
-}
-
-.landing-hero h1 {
-    line-height: 1.2;
-    font-weight: 800;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.02em;
-}
-
-.hero-title {
-    font-size: clamp(2.5rem, 8vw, 4rem);
-}
-
-.hero-accent {
-    color: var(--citycare-sky-light);
-    background: linear-gradient(135deg, #2f85ff 0%, #4a9dff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.hero-subtitle {
-    font-size: clamp(1rem, 2.5vw, 1.35rem);
-    line-height: 1.6;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.hero-btn-primary {
-    background: linear-gradient(135deg, #2f85ff 0%, #4a9dff 100%);
-    border: none;
-    color: #fff !important;
-    transition: all 0.3s ease;
-    box-shadow: 0 12px 28px rgba(47, 133, 255, 0.35);
-}
-
-.hero-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 36px rgba(47, 133, 255, 0.45);
-}
-
-.hero-btn-secondary {
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    transition: all 0.3s ease;
-}
-
-.hero-btn-secondary:hover {
-    border-color: #fff;
-    background: rgba(255, 255, 255, 0.1);
 }
 
 .hero-content {
@@ -97,213 +52,134 @@ body.public-layout main {
     z-index: 2;
 }
 
-/* Features Section */
+.hero-title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.hero-accent {
+    background: linear-gradient(135deg, var(--citycare-accent), var(--citycare-accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ============================================
+   HERO BUTTONS
+   ============================================ */
+
+.hero-btn-primary {
+    background: linear-gradient(135deg, var(--citycare-accent), var(--citycare-accent-2));
+    color: #111 !important;
+    border: none;
+    font-weight: 800;
+    box-shadow: 0 12px 28px rgba(255, 196, 0, 0.3);
+    transition: all 0.25s ease;
+}
+
+    .hero-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(255, 196, 0, 0.4);
+    }
+
+.hero-btn-secondary {
+    border: 2px solid var(--citycare-accent);
+    color: var(--citycare-accent) !important;
+    background: transparent;
+    font-weight: 800;
+    transition: all 0.25s ease;
+}
+
+    .hero-btn-secondary:hover {
+        background: rgba(255, 196, 0, 0.12);
+        color: var(--citycare-accent-2) !important;
+    }
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+
 .features-section {
-    background: linear-gradient(180deg, rgba(15, 47, 128, 0.5) 0%, rgba(8, 26, 74, 0.8) 100%);
+    background: linear-gradient(180deg, rgba(15,47,128,0.5), rgba(8,26,74,0.8));
     margin-top: -80px;
-    padding-top: 100px;
-    padding-bottom: 80px;
+    padding: 100px 0 80px;
 }
 
 .feature-card {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 1.25rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
     padding: 2rem;
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
     color: #fff;
+    transition: all 0.25s ease;
 }
 
-.feature-card:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
+    .feature-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255,255,255,0.12);
+    }
 
 .feature-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #2f85ff 0%, #4a9dff 100%);
+    background: linear-gradient(135deg, var(--citycare-accent), var(--citycare-accent-2));
     border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
-    color: #fff;
-    box-shadow: 0 10px 24px rgba(47, 133, 255, 0.3);
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    color: #111;
 }
 
-.feature-card h5 {
-    color: #fff;
-    font-weight: 700;
-}
+/* ============================================
+   CTA SECTION
+   ============================================ */
 
-/* CTA Section */
 .cta-section {
-    background: linear-gradient(180deg, rgba(8, 26, 74, 0.8) 0%, #020818 100%);
+    background: linear-gradient(180deg, rgba(8,26,74,0.8), #020818);
     padding: 80px 0;
 }
 
 .cta-card {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(47, 133, 255, 0.3);
-    border-radius: 1.5rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,196,0,0.3);
+    border-radius: 24px;
     padding: 3rem 2rem;
     backdrop-filter: blur(10px);
     color: #fff;
 }
 
-.cta-card h2 {
-    color: #fff;
-    margin-bottom: 1rem;
-}
-
-.cta-card .btn {
-    min-width: 200px;
-    transition: all 0.3s ease;
-}
-
-/* ============================================
-   AUTH PAGE STYLES
-   ============================================ */
-
-.auth-page {
-    min-height: calc(100vh - 180px);
-    padding: 40px 20px 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.auth-header {
-    margin-bottom: 2rem;
-}
-
-.auth-logo-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.auth-card {
-    background-color: var(--citycare-auth-card-bg);
-    color: #111827;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.auth-card:hover {
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15) !important;
-}
-
-.auth-card h4 {
-    color: var(--citycare-auth-accent);
-}
-
-.auth-card label,
-.auth-card .form-label,
-.auth-card .form-check-label,
-.auth-card small {
-    color: #111827;
-}
-
-.auth-card a,
-.auth-card .link-primary {
-    color: var(--citycare-auth-accent);
-}
-
-.auth-card a:hover,
-.auth-card .link-primary:hover {
-    color: #1b6bb8;
-}
-
-.auth-card .input-group-text {
-    background-color: transparent;
+/* CTA Buttons */
+.cta-btn-primary {
+    background: linear-gradient(135deg, var(--citycare-accent), var(--citycare-accent-2));
+    color: #111 !important;
     border: none;
-    border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
-    padding: 0.75rem;
+    font-weight: 800;
+    box-shadow: 0 12px 28px rgba(255,196,0,0.25);
+    transition: all 0.25s ease;
 }
 
-.auth-card .form-control,
-.auth-card .form-select,
-.auth-card textarea {
-    background-color: #f3f4f6;
-    color: #111827;
-    border-color: rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
+    .cta-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(255,196,0,0.35);
+    }
+
+.cta-btn-outline {
+    background: transparent;
+    border: 2px solid var(--citycare-accent);
+    color: var(--citycare-accent) !important;
+    font-weight: 800;
+    transition: all 0.25s ease;
 }
 
-.auth-card .form-control::placeholder,
-.auth-card textarea::placeholder {
-    color: rgba(17, 24, 39, 0.55);
-}
-
-.auth-card .form-control:focus,
-.auth-card .form-select:focus,
-.auth-card textarea:focus {
-    border-color: var(--citycare-auth-accent);
-    background-color: #ffffff;
-    box-shadow: 0 0 0 0.1rem rgba(10, 42, 106, 0.15);
-}
-
-.auth-card .form-control.border-start-0:focus {
-    border-left: none !important;
-}
-
-.auth-card .btn {
-    background-color: var(--citycare-auth-accent);
-    border-color: var(--citycare-auth-accent);
-    color: #fff !important;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-.auth-card .btn:hover {
-    background-color: #1b6bb8;
-    border-color: #1b6bb8;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(10, 42, 106, 0.25);
-}
-
-.auth-card .btn:focus,
-.auth-card .btn:active:focus {
-    box-shadow: 0 0 0 0.1rem rgba(10, 42, 106, 0.35);
-}
-
-.auth-card .btn-outline-primary {
-    color: var(--citycare-auth-accent) !important;
-    border-color: var(--citycare-auth-accent);
-    background-color: transparent;
-}
-
-.auth-card .btn-outline-primary:hover {
-    background-color: var(--citycare-auth-accent);
-    color: #fff !important;
-}
-
-/* Validation styles */
-.auth-card .text-danger {
-    color: #dc2626 !important;
-}
-
-.auth-card .alert-danger {
-    background-color: rgba(220, 38, 38, 0.1);
-    border-color: rgba(220, 38, 38, 0.3);
-    color: #991b1b;
-}
-
-/* Form text styling */
-.auth-card .form-text {
-    color: #6b7280 !important;
-    font-size: 0.875rem;
-}
-
-/* Border styling */
-.auth-card .border-top {
-    border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
+    .cta-btn-outline:hover {
+        background: rgba(255,196,0,0.12);
+        color: #fff !important;
+    }

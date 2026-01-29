@@ -543,3 +543,48 @@ body.public-layout .btn-glass-primary {
     body.public-layout .btn-glass-primary:hover {
         background: var(--yellow-2);
     }
+
+/* ============================================
+   13) AUTH BUTTON OVERRIDE (Login / Register)
+   Make Bootstrap btn-primary YELLOW only inside auth pages
+   ============================================ */
+
+/* Login/Register pages: Primary button -> Yellow */
+body.public-layout .auth-card .btn.btn-primary,
+body.public-layout .auth-page .btn.btn-primary {
+    background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-2) 100%) !important;
+    border: none !important;
+    color: #111 !important;
+    font-weight: 800;
+    box-shadow: 0 12px 28px rgba(255, 196, 0, 0.28);
+    transition: all 0.25s ease;
+}
+
+    /* Hover */
+    body.public-layout .auth-card .btn.btn-primary:hover,
+    body.public-layout .auth-page .btn.btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(255, 196, 0, 0.38);
+    }
+
+    /* Focus */
+    body.public-layout .auth-card .btn.btn-primary:focus,
+    body.public-layout .auth-page .btn.btn-primary:focus {
+        box-shadow: 0 0 0 3px rgba(255, 196, 0, 0.45) !important;
+    }
+
+/* Outline primary (if you use it in auth pages) */
+body.public-layout .auth-card .btn.btn-outline-primary,
+body.public-layout .auth-page .btn.btn-outline-primary {
+    border: 2px solid var(--yellow) !important;
+    color: var(--yellow) !important;
+    background: transparent !important;
+    font-weight: 800;
+}
+
+    body.public-layout .auth-card .btn.btn-outline-primary:hover,
+    body.public-layout .auth-page .btn.btn-outline-primary:hover {
+        background: rgba(255, 196, 0, 0.12) !important;
+        color: var(--yellow-2) !important;
+        border-color: var(--yellow-2) !important;
+    }
