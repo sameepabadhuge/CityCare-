@@ -1,51 +1,45 @@
 @{
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
     ViewData["Title"] = "About CityCare";
 }
 
-<div class="container py-5" style="max-width:900px;">
-    <h2 class="mb-4">About CityCare</h2>
+<div class="page-wrap">
+    <h1 class="display-5 fw-bold mb-4">About CityCare</h1>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Our Mission</h5>
-            <p class="card-text">
-                CityCare is a comprehensive city complaint management system designed to bridge the gap between citizens and city departments. 
-                Our platform empowers citizens to report issues efficiently while enabling city staff to manage and resolve complaints effectively.
-            </p>
-        </div>
-    </div>
+    <section class="glass-card">
+        <h2 class="h4 fw-bold mb-2">Our Mission</h2>
+        <p class="mb-0">
+            CityCare is a comprehensive city complaint management system designed to bridge the gap
+            between citizens and city departments. Our platform empowers citizens to report issues
+            efficiently while enabling city staff to manage and resolve complaints effectively.
+        </p>
+    </section>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">For Citizens</h5>
-            <ul>
-                <li>Report city issues quickly and easily</li>
-                <li>Track the status of your complaints in real-time</li>
-                <li>Receive notifications on complaint updates</li>
-                <li>Rate the resolution service quality</li>
-            </ul>
-        </div>
-    </div>
+    <section class="glass-card mt-4">
+        <h2 class="h4 fw-bold mb-2">For Citizens</h2>
+        <ul class="mb-0">
+            <li>Report city issues quickly and easily</li>
+            <li>Track the status of your complaints in real-time</li>
+            <li>Receive notifications on complaint updates</li>
+            <li>Rate the resolution service quality</li>
+        </ul>
+    </section>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">For Staff</h5>
-            <ul>
-                <li>View and manage complaints assigned to your department</li>
-                <li>Update complaint status (Pending, In Progress, Resolved)</li>
-                <li>Receive instant notifications for new complaints</li>
-                <li>Efficient workflow for handling citizen issues</li>
-            </ul>
-        </div>
-    </div>
+    <section class="glass-card mt-4">
+        <h2 class="h4 fw-bold mb-2">For Staff</h2>
+        <ul class="mb-0">
+            <li>View and manage complaints assigned to your department</li>
+            <li>Update complaint status (Pending, In Progress, Resolved)</li>
+            <li>Receive instant notifications for new complaints</li>
+            <li>Efficient workflow for handling citizen issues</li>
+        </ul>
+    </section>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">Categories</h5>
-            <p class="card-text">
-                CityCare currently supports complaint categories including Water and Garbage management, 
-                with plans to expand to more city services in the future.
-            </p>
-        </div>
-    </div>
+    <section class="glass-card mt-4">
+        <h2 class="h4 fw-bold mb-2">Categories</h2>
+        <p class="mb-0">
+            CityCare currently supports complaint categories including Water and Garbage management,
+            with plans to expand to more city services in the future.
+        </p>
+    </section>
 </div>

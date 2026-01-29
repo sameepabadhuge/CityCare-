@@ -1,522 +1,306 @@
-/* Modern Color System */
+﻿/* ============================================
+   CITYCARE - CLEAN SITE.CSS (Final)
+   ============================================ */
+
+/* =========================
+   1) COLOR SYSTEM
+   ========================= */
 :root {
-  --navy: #0B2A4A;
-  --navy-2: #123B63;
-  --yellow: #FFC400;
-  --yellow-2: #FFB300;
-  --bg: #F6F8FB;
-  --text: #0F172A;
-  --muted: #64748B;
-  --card: #FFFFFF;
-  --border: #E6EAF2;
+    --navy: #0B2A4A;
+    --navy-2: #123B63;
+    --yellow: #FFC400;
+    --yellow-2: #FFB300;
+    --bg: #F6F8FB;
+    --text: #0F172A;
+    --muted: #64748B;
+    --card: #FFFFFF;
+    --border: #E6EAF2;
+    /* Navbar */
+    --navbar-bg: #08255e;
+    --navbar-fg: #ffffff;
 }
 
+/* =========================
+   2) BASE / LAYOUT
+   ========================= */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-/* Accessibility: consistent focus */
-:focus-visible {
-  outline: 3px solid rgba(255, 196, 0, 0.55);
-  outline-offset: 2px;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin: 0;
-  background-color: #ffffff;
-  color: #111827;
+    margin: 0;
+    background: #ffffff;
+    color: #111827;
 }
 
-body.public-layout {
-  background: radial-gradient(circle at 50% 35%, #0f2f80 0%, #081a4a 55%, #020818 100%);
-  color: #f6fbff;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+/* Accessibility focus */
+:focus-visible {
+    outline: 3px solid rgba(255, 196, 0, 0.55);
+    outline-offset: 2px;
 }
 
+/* Bootstrap focus (keep if needed) */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* App shell layout */
 body.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
+    body.app-shell > header {
+        flex-shrink: 0;
+    }
+
 main {
     flex: 1 0 auto;
+    width: 100%;
+}
+
+/* Optional container padding for app shell pages */
+body.app-shell > .container {
+    flex: 1 0 auto;
+    width: 100%;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* =========================
+   2.1) PUBLIC LAYOUT (Login/Register/About/Privacy/Terms)
+   ========================= */
+body.public-layout {
+    background: radial-gradient(circle at 50% 35%, #0f2f80 0%, #081a4a 55%, #020818 100%);
+    color: #f6fbff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .public-footer {
     margin-top: auto;
 }
-body.app-shell > header {
-  flex-shrink: 0;
-}
 
-body.app-shell > .container {
-  flex: 1 0 auto;
-  width: 100%;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
-
-body.app-shell main {
-  min-height: auto;
-}
-
-main {
-  flex: 1 0 auto;
-  width: 100%;
-}
-
+/* Utilities */
 .soft-gray-bg {
-  background-color: #e0e5ef !important;
-  color: #1f2937;
+    background-color: #e0e5ef !important;
+    color: #1f2937;
 }
 
 .soft-gray-footer {
-  background-color: #d4dae4;
-  color: #1f2937;
+    background-color: #d4dae4;
+    color: #1f2937;
 }
 
-/* ============================================
-   PUBLIC NAVBAR STYLES
-   ============================================ */
-
-.public-navbar {
-  background: linear-gradient(90deg, #0a2a5e 0%, #0f3d7f 50%, #081a4a 100%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.public-navbar .navbar-brand {
-  color: #ffffff !important;
-  font-weight: 700;
-  font-size: 1.35rem;
-  transition: all 0.3s ease;
-}
-
-.public-navbar .navbar-brand:hover {
-  color: #e0f2fe !important;
-}
-
-.public-navbar .nav-link {
-  color: rgba(255, 255, 255, 0.85) !important;
-  transition: all 0.3s ease;
-  font-size: 0.95rem;
-}
-
-.public-navbar .nav-link:hover {
-  color: #ffffff !important;
-}
-
-.public-navbar .navbar-toggler {
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
-
-.public-navbar .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-/* ============================================
-   PUBLIC FOOTER STYLES
-   ============================================ */
-
-.public-footer {
-  background: linear-gradient(90deg, #0a2a5e 0%, #0f3d7f 50%, #081a4a 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem 0;
-  margin-top: auto;
-  flex-shrink: 0;
-}
-
-.public-footer .footer-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-}
-
-.public-footer a {
-  transition: color 0.3s ease;
-}
-
-.public-footer a:hover {
-  color: #ffffff !important;
-}
-
-/* ============================================
-   ADMIN NAVBAR & FOOTER
-   ============================================ */
-
-.brand-gradient-bg {
-  background: #0000AA !important;
-  color: #f2f6ff;
-}
-
-.brand-gradient-footer {
-  background: linear-gradient(90deg, #0a3dac 0%, #0f5ed5 60%, #0c378f 100%);
-  color: #f2f6ff;
-}
-
-.footer {
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  margin-top: auto;
-  background: transparent;
-  min-height: 60px;
-}
-
-.footer .footer-content {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
-}
-
-.brand-gradient-bg .navbar-brand span,
-.brand-gradient-bg .navbar-brand,
-.brand-gradient-bg .nav-link,
-.brand-gradient-bg .navbar-toggler,
-.brand-gradient-bg .navbar-toggler-icon {
-  color: #f2f6ff !important;
-}
-
-.brand-gradient-bg .navbar-toggler {
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.brand-gradient-bg .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-}
-
-.navbar {
-  margin-bottom: 0;
-}
-
-/* Navbar color */
-:root {
-    --navbar-bg: #08255e;
-    --navbar-fg: #ffffff;
-}
-
+/* =========================
+   3) NAVBAR (DEFAULT)
+   ========================= */
 .navbar,
 .navbar.navbar-light,
 .navbar.navbar-dark {
     background-color: var(--navbar-bg) !important;
+    margin-bottom: 0;
 }
 
-.navbar .navbar-brand,
-.navbar .nav-link,
-.navbar .navbar-text {
-    color: var(--navbar-fg) !important;
+    .navbar .navbar-brand,
+    .navbar .nav-link,
+    .navbar .navbar-text {
+        color: var(--navbar-fg) !important;
+    }
+
+        .navbar .nav-link:hover,
+        .navbar .navbar-brand:hover {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+    .navbar .navbar-toggler {
+        border-color: rgba(255, 255, 255, 0.35) !important;
+    }
+
+    .navbar .navbar-toggler-icon {
+        filter: invert(1) grayscale(1) brightness(2);
+    }
+
+/* =========================
+   4) PUBLIC NAVBAR
+   ========================= */
+.public-navbar {
+    background: linear-gradient(90deg, #0a2a5e 0%, #0f3d7f 50%, #081a4a 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.navbar .nav-link:hover,
-.navbar .navbar-brand:hover {
-    color: rgba(255, 255, 255, 0.85) !important;
-}
+    .public-navbar .navbar-brand {
+        color: #ffffff !important;
+        font-weight: 700;
+        font-size: 1.35rem;
+        transition: all 0.3s ease;
+    }
 
-.navbar .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.35) !important;
-}
+        .public-navbar .navbar-brand:hover {
+            color: #e0f2fe !important;
+        }
 
-.navbar .navbar-toggler-icon {
-    filter: invert(1) grayscale(1) brightness(2);
-}
+    .public-navbar .nav-link {
+        color: rgba(255, 255, 255, 0.85) !important;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
 
-/* Modern Navy Navbar - OVERRIDE for Admin */
+        .public-navbar .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+    .public-navbar .navbar-toggler {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    .public-navbar .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+/* =========================
+   5) ADMIN NAVBAR
+   ========================= */
 .admin-navbar.navbar {
-  background: var(--navy) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--navy) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.admin-navbar.navbar .navbar-brand {
-  color: #EAF2FF !important;
-}
+    .admin-navbar.navbar .navbar-brand,
+    .admin-navbar.navbar .nav-link {
+        color: #EAF2FF !important;
+    }
 
-.admin-navbar.navbar .nav-link {
-  color: #EAF2FF !important;
-}
+        .admin-navbar.navbar .nav-link:hover {
+            color: #FFFFFF !important;
+        }
 
-.admin-navbar.navbar .nav-link:hover {
-  color: #FFFFFF !important;
-}
+        .admin-navbar.navbar .nav-link.active {
+            position: relative;
+            color: #FFFFFF !important;
+        }
 
-.admin-navbar.navbar .nav-link.active {
-  position: relative;
-  color: #FFFFFF !important;
-}
+            .admin-navbar.navbar .nav-link.active::after {
+                content: "";
+                position: absolute;
+                left: 0.5rem;
+                right: 0.5rem;
+                bottom: -0.5rem;
+                height: 3px;
+                background: var(--yellow);
+                border-radius: 999px;
+            }
 
-.admin-navbar.navbar .nav-link.active::after {
-  content: "";
-  position: absolute;
-  left: 0.5rem;
-  right: 0.5rem;
-  bottom: -0.5rem;
-  height: 3px;
-  background: var(--yellow);
-  border-radius: 999px;
-}
+    .admin-navbar.navbar .dropdown-menu {
+        background: #fff;
+        border-color: var(--border);
+    }
 
-.admin-navbar.navbar .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.35) !important;
-}
+    .admin-navbar.navbar .dropdown-item {
+        color: var(--text);
+    }
 
-.admin-navbar.navbar .navbar-toggler-icon {
-    filter: invert(1) grayscale(1) brightness(2);
-}
+        .admin-navbar.navbar .dropdown-item:hover,
+        .admin-navbar.navbar .dropdown-item:focus {
+            background: var(--bg);
+            color: var(--text);
+        }
 
-.admin-navbar.navbar .dropdown-menu {
-  background: #fff;
-  border-color: var(--border);
-}
-
-.admin-navbar.navbar .dropdown-menu .dropdown-item {
-  color: var(--text);
-}
-
-.admin-navbar.navbar .dropdown-menu .dropdown-item:hover,
-.admin-navbar.navbar .dropdown-menu .dropdown-item:focus {
-  background: var(--bg);
-  color: var(--text);
-}
-
+/* =========================
+   6) BUTTONS
+   ========================= */
+.btn-cc-primary,
 .btn-primary-cc {
-  background: var(--yellow);
-  border: none;
-  color: #1A1A1A;
-  font-weight: 700;
-  border-radius: 12px;
-  padding: 0.625rem 1rem;
-  transition: background 0.15s ease;
+    background: var(--yellow);
+    border: none;
+    color: #1A1A1A;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 0.625rem 1rem;
+    transition: background 0.15s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.btn-primary-cc:hover {
-  background: var(--yellow-2);
-  color: #1A1A1A;
-  text-decoration: none;
-}
+    .btn-cc-primary:hover,
+    .btn-primary-cc:hover {
+        background: var(--yellow-2);
+        color: #1A1A1A;
+        text-decoration: none;
+    }
 
-.btn-primary-cc:focus {
-  color: #1A1A1A;
-  background: var(--yellow-2);
-  outline: 3px solid rgba(255, 196, 0, 0.55);
-  outline-offset: 2px;
-}
+    .btn-cc-primary:focus,
+    .btn-primary-cc:focus {
+        color: #1A1A1A;
+        background: var(--yellow-2);
+        outline: 3px solid rgba(255, 196, 0, 0.55);
+        outline-offset: 2px;
+    }
 
-/* Alias for consistency across all pages */
-.btn-cc-primary {
-  background: var(--yellow);
-  border: none;
-  color: #1A1A1A;
-  font-weight: 700;
-  border-radius: 12px;
-  padding: 0.625rem 1rem;
-  transition: background 0.15s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-cc-primary:hover {
-  background: var(--yellow-2);
-  color: #1A1A1A;
-  text-decoration: none;
-}
-
-.btn-cc-primary:focus {
-  color: #1A1A1A;
-  background: var(--yellow-2);
-  outline: 3px solid rgba(255, 196, 0, 0.55);
-  outline-offset: 2px;
-}
-
-.quick-actions-section {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
-}
-
-.quick-actions-title {
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.5rem;
-}
-
-.quick-actions-subtitle {
-  color: var(--muted);
-  font-size: 0.92rem;
-  margin-bottom: 1.5rem;
-}
-
-.quick-actions-buttons {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 576px) {
-  .quick-actions-buttons {
-    flex-direction: column;
-  }
-
-  .quick-actions-buttons .btn {
-    width: 100%;
-  }
-}
-
-/* ============================================
-   ADMIN DASHBOARD STYLES (Modern + HCI)
-   ============================================ */
-
-.admin-page {
-  background: var(--bg);
-  min-height: auto;
-  padding: 2rem 0;
-}
-
-.admin-header h1 {
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-
-.admin-header p {
-  color: var(--muted);
-  margin: 0;
-}
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-@media (max-width: 992px) {
-  .stat-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.10);
-}
-
-.stat-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 196, 0, 0.18);
-  border: 1px solid rgba(255, 196, 0, 0.35);
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.stat-title {
-  font-weight: 700;
-  margin: 0;
-  color: var(--text);
-}
-
-.stat-sub {
-  color: var(--muted);
-  font-size: 0.92rem;
-  margin: 0;
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0.75rem 0 0 0;
-  color: var(--text);
-}
-
-/* ============================================
-   LOGOUT BUTTON STYLING
-   ============================================ */
-
+/* Logout button */
 .btn-cc-logout {
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  color: #fff !important;
-  background: transparent !important;
-  transition: all 0.15s ease;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    color: #fff !important;
+    background: transparent !important;
+    transition: all 0.15s ease;
 }
 
-.brand-gradient-bg .btn-cc-logout:hover {
-  border-color: var(--yellow) !important;
-  color: var(--yellow) !important;
-  background: rgba(255, 196, 0, 0.1) !important;
+    .btn-cc-logout:hover {
+        border-color: var(--yellow) !important;
+        color: var(--yellow) !important;
+        background: rgba(255, 196, 0, 0.1) !important;
+    }
+
+    .btn-cc-logout:focus {
+        outline: 3px solid rgba(255, 196, 0, 0.55);
+        outline-offset: 2px;
+    }
+
+/* =========================
+   7) PUBLIC FOOTER + UNIFIED FOOTER
+   ========================= */
+.public-footer {
+    background: linear-gradient(90deg, #0a2a5e 0%, #0f3d7f 50%, #081a4a 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem 0;
+    margin-top: auto;
+    flex-shrink: 0;
 }
 
-.admin-navbar .btn-cc-logout:hover {
-  border-color: var(--yellow) !important;
-  color: var(--yellow) !important;
-  background: rgba(255, 196, 0, 0.1) !important;
-}
+    .public-footer .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 60px;
+    }
 
-.btn-cc-logout:focus {
-  outline: 3px solid rgba(255, 196, 0, 0.55);
-  outline-offset: 2px;
-}
+    .public-footer a {
+        transition: color 0.3s ease;
+    }
 
-/* Old btn-logout class (deprecated) */
-.btn-logout {
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  color: #fff !important;
-  background: transparent !important;
-}
+        .public-footer a:hover {
+            color: #ffffff !important;
+        }
 
-.btn-logout:hover {
-  border-color: var(--yellow) !important;
-  color: var(--yellow) !important;
-}
-
-
-
-/* ============================================
-   CITYCARE UNIFIED FOOTER (USE EVERYWHERE)
-   ============================================ */
+/* Unified footer (use everywhere) */
 .cc-footer {
     background: linear-gradient(180deg, #0b2a5b 0%, #071f44 100%);
     border-top: 1px solid rgba(255, 255, 255, 0.10);
@@ -540,15 +324,54 @@ main {
         border-color: rgba(255, 255, 255, 0.12);
     }
 
+/* =========================
+   8) ADMIN DASHBOARD UI
+   ========================= */
+.admin-page {
+    background: var(--bg);
+    padding: 2rem 0;
+}
 
+.admin-header h1 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
 
+.admin-header p {
+    color: var(--muted);
+    margin: 0;
+}
 
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .stat-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.10);
+    }
 
 /* =========================
-   Notifications - actions
+   9) NOTIFICATIONS (ACTIONS)
    ========================= */
-
-/* Make the "Open" button behave like a link-row but accessible */
 .notify-open-form {
     flex: 1;
     margin: 0;
@@ -558,7 +381,6 @@ main {
     width: 100%;
 }
 
-/* Trash button (right side) */
 .notify-trash {
     border: 0;
     background: transparent;
@@ -572,15 +394,13 @@ main {
     transition: 0.15s ease;
 }
 
-    /* Red icon */
     .notify-trash i {
-        color: #dc3545; /* bootstrap danger */
+        color: #dc3545;
         font-size: 1.05rem;
         opacity: 0.9;
         transition: 0.15s ease;
     }
 
-    /* Hover effect */
     .notify-trash:hover {
         background: rgba(220, 53, 69, 0.08);
     }
@@ -591,17 +411,14 @@ main {
             transform: scale(1.05);
         }
 
-    /* Keyboard focus (important for accessibility) */
     .notify-trash:focus-visible {
         outline: 3px solid rgba(220, 53, 69, 0.35);
         outline-offset: 2px;
     }
 
-
-
-
-
-/* Toast (success message) */
+/* =========================
+   10) TOAST (SUCCESS)
+   ========================= */
 .cc-toast {
     position: sticky;
     top: 1rem;
@@ -619,32 +436,17 @@ main {
 }
 
 .cc-toast-success {
-    background: #dcfce7; /* Tailwind-style green */
+    background: #dcfce7;
     border-color: #86efac;
 }
 
+    .cc-toast-success .cc-toast-title {
+        color: #065f46;
+    }
 
-
-.cc-toast-success .cc-toast-title {
-  color: #065f46; /* dark green */
-}
-
-.cc-toast-success .cc-toast-text {
-  color: #064e3b;
-}
-
-
-.cc-toast-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: rgba(34, 197, 94, 0.12);
-    color: #16a34a;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-}
+    .cc-toast-success .cc-toast-text {
+        color: #064e3b;
+    }
 
 .cc-toast-title {
     font-weight: 800;
@@ -656,19 +458,6 @@ main {
     color: var(--muted);
     font-size: 0.95rem;
 }
-
-.cc-toast-close {
-    margin-left: auto;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    padding: 0.25rem;
-    cursor: pointer;
-}
-
-    .cc-toast-close:hover {
-        color: var(--text);
-    }
 
 .cc-toast.hide {
     opacity: 0;
@@ -686,10 +475,71 @@ main {
         opacity: 1;
         transform: translateY(0);
     }
-
-
-
-
-
-
 }
+
+/* =========================
+   11) AUTH UI (Login/Register) - LIMITED
+   ========================= */
+/* ✅ Apply these only when NOT public-layout */
+body:not(.public-layout) .auth-page {
+    background: #f5f7fb;
+    padding: 48px 16px;
+}
+
+body:not(.public-layout) .auth-box {
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    border: 1px solid #dfe6f1;
+    border-radius: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 28px;
+}
+
+/* =========================
+   12) GLASS / TRANSPARENT (ONLY public-layout pages)
+   ========================= */
+body.public-layout .page-wrap {
+    width: 100%;
+    max-width: 980px;
+    margin: 80px auto;
+    padding: 0 16px;
+}
+
+body.public-layout .glass-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+    body.public-layout .glass-card .form-control,
+    body.public-layout .glass-card input,
+    body.public-layout .glass-card select {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+    }
+
+        body.public-layout .glass-card .form-control:focus,
+        body.public-layout .glass-card input:focus {
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 196, 0, 0.25);
+        }
+
+body.public-layout .btn-glass-primary {
+    background: var(--yellow);
+    border: none;
+    color: #111;
+    font-weight: 800;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    width: 100%;
+}
+
+    body.public-layout .btn-glass-primary:hover {
+        background: var(--yellow-2);
+    }
