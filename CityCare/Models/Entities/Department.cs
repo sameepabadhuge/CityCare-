@@ -13,4 +13,7 @@ public class Department
     public string Code { get; set; } = "";   // WTR
 
     public bool IsActive { get; set; } = true;
+
+    // ✅ STEP 2: One Department → Many Issues
+    public ICollection<Issue> Issues { get; set; } = new List<Issue>();
 }

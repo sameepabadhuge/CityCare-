@@ -14,10 +14,17 @@ public class Issue
     [Required, MaxLength(2000)]
     public string Description { get; set; } = "";
 
-    [Required, MaxLength(40)]
-    public string Category { get; set; } = ""; // Water, Garbage
+    [Required]
+    [MaxLength(50)]
+    public string Category { get; set; } = "";
+
+    // ✅ STEP 01: Department FK (instead of string Category)
+    
+    public int DepartmentId { get; set; }
+    public Department? Department { get; set; }
 
     // citizen selects city (default = their registered city)
+    [Required]
     public int CityId { get; set; }
     public City? City { get; set; }
 

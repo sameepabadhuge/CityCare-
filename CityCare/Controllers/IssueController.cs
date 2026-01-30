@@ -4,7 +4,6 @@ using CityCare.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CityCare.Controllers;
@@ -33,6 +32,7 @@ public class IssueController : Controller
 
         var issues = await _db.Issues
             .Include(i => i.City)
+            .Include(i => i.Department)
             .Where(i => i.CitizenId == uid)
             .OrderByDescending(i => i.CreatedAt)
             .ToListAsync();
@@ -67,6 +67,7 @@ public class IssueController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
+        // IMPORTANT: reload dropdowns for re-rendering view on validation errors
         await LoadCreateDropdownsAsync();
 
         // Default city if not selected
@@ -84,20 +85,21 @@ public class IssueController : Controller
             return View(vm);
         }
 
-        // Safety: category check
-        var category = (vm.Category ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(category))
+        // Validate department exists
+        var deptOk = await _db.Departments.AnyAsync(d => d.Id == vm.DepartmentId && d.IsActive);
+        if (!deptOk)
         {
-            ModelState.AddModelError(nameof(vm.Category), "Please select a category.");
+            ModelState.AddModelError(nameof(vm.DepartmentId), "Please select a valid department.");
             return View(vm);
         }
 
-        // Create issue
+        // ✅ Create issue (FIX: Category added)
         var issue = new Issue
         {
             Title = vm.Title?.Trim() ?? "",
             Description = vm.Description?.Trim() ?? "",
-            Category = category,
+            Category = vm.Category?.Trim() ?? "",          // ✅ FIXED
+            DepartmentId = vm.DepartmentId,                 // ✅ Department
             CityId = vm.CityId,
             LocationText = vm.LocationText?.Trim() ?? "",
             CitizenId = user.Id,
@@ -106,7 +108,7 @@ public class IssueController : Controller
         };
 
         // Snapshot contact phone (optional)
-        await FillContactPhoneAsync(issue, category);
+        await FillContactPhoneAsync(issue);
 
         _db.Issues.Add(issue);
         await _db.SaveChangesAsync();
@@ -145,7 +147,8 @@ public class IssueController : Controller
 
         var issue = await _db.Issues
             .Include(i => i.City)
-            .Include(i => i.Images)   // ✅ must include
+            .Include(i => i.Department)
+            .Include(i => i.Images)
             .Include(i => i.Rating)
             .FirstOrDefaultAsync(i => i.Id == id && i.CitizenId == uid);
 
@@ -208,7 +211,6 @@ public class IssueController : Controller
 
         await _db.SaveChangesAsync();
 
-        // Notify staff about rating
         await NotifyStaffRatingAsync(issue, vm.Stars);
 
         TempData["Success"] = "Thank you! Your rating was submitted.";
@@ -219,18 +221,16 @@ public class IssueController : Controller
     // LOOKUP STAFF PHONE (GET)
     // -----------------------------
     [HttpGet]
-    public async Task<IActionResult> LookupStaffPhone(string? category, int cityId)
+    public async Task<IActionResult> LookupStaffPhone(int departmentId, int cityId)
     {
-        if (string.IsNullOrWhiteSpace(category) || cityId <= 0)
+        if (departmentId <= 0 || cityId <= 0)
             return Json(new LookupStaffPhoneResponse { staffPhone = null });
 
-        var trimmed = category.Trim();
-
-        var dept = await _db.Departments
+        var deptOk = await _db.Departments
             .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == trimmed.ToLower());
+            .AnyAsync(d => d.IsActive && d.Id == departmentId);
 
-        if (dept == null)
+        if (!deptOk)
             return Json(new LookupStaffPhoneResponse { staffPhone = null });
 
         var staffRoleId = await _db.Roles
@@ -244,7 +244,7 @@ public class IssueController : Controller
 
         var phone = await _db.Users
             .AsNoTracking()
-            .Where(u => u.CityId == cityId && u.DepartmentId == dept.Id)
+            .Where(u => u.CityId == cityId && u.DepartmentId == departmentId)
             .Join(_db.UserRoles.AsNoTracking().Where(ur => ur.RoleId == staffRoleId),
                 u => u.Id,
                 ur => ur.UserId,
@@ -270,10 +270,21 @@ public class IssueController : Controller
             .OrderBy(c => c.Name)
             .ToListAsync();
 
-        ViewBag.Categories = new List<SelectListItem>
+        ViewBag.Departments = await _db.Departments
+            .Where(d => d.IsActive)
+            .OrderBy(d => d.Name)
+            .ToListAsync();
+
+        // ✅ FIX: Categories list (prevents null reference in Create.cshtml)
+        ViewBag.Categories = new List<string>
         {
-            new SelectListItem("Water", "Water"),
-            new SelectListItem("Garbage", "Garbage")
+            "Water",
+            "Garbage",
+            "Road",
+            "Electricity",
+            "Street Light",
+            "Drainage",
+            "Other"
         };
     }
 
@@ -283,7 +294,7 @@ public class IssueController : Controller
 
         var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
         if (!allowed.Contains(imageFile.ContentType))
-            return; // silently ignore (or you can throw ModelState error)
+            return;
 
         var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "issues");
         Directory.CreateDirectory(uploadsRoot);
@@ -302,16 +313,12 @@ public class IssueController : Controller
             IssueId = issueId,
             ImageUrl = imageUrl
         });
+
+        await _db.SaveChangesAsync();
     }
 
-    private async Task FillContactPhoneAsync(Issue issue, string category)
+    private async Task FillContactPhoneAsync(Issue issue)
     {
-        var deptForPhone = await _db.Departments
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == category.ToLower());
-
-        if (deptForPhone == null) return;
-
         var staffRoleId = await _db.Roles
             .AsNoTracking()
             .Where(r => r.NormalizedName == "STAFF")
@@ -322,7 +329,7 @@ public class IssueController : Controller
 
         var phone = await _db.Users
             .AsNoTracking()
-            .Where(u => u.CityId == issue.CityId && u.DepartmentId == deptForPhone.Id)
+            .Where(u => u.CityId == issue.CityId && u.DepartmentId == issue.DepartmentId)
             .Join(_db.UserRoles.AsNoTracking().Where(ur => ur.RoleId == staffRoleId),
                 u => u.Id,
                 ur => ur.UserId,
@@ -337,14 +344,16 @@ public class IssueController : Controller
 
     private async Task NotifyStaffAsync(Issue issue)
     {
-        var dept = await _db.Departments
-            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == issue.Category.ToLower());
-
-        if (dept == null) return;
-
         var staffUsers = await _db.Users
-            .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
+            .Where(u => u.CityId == issue.CityId && u.DepartmentId == issue.DepartmentId)
             .ToListAsync();
+
+        var deptName = await _db.Departments
+            .Where(d => d.Id == issue.DepartmentId)
+            .Select(d => d.Name)
+            .FirstOrDefaultAsync();
+
+        deptName ??= "Department";
 
         foreach (var staff in staffUsers)
         {
@@ -353,7 +362,7 @@ public class IssueController : Controller
                 UserId = staff.Id,
                 IssueId = issue.Id,
                 Title = "New Complaint Assigned",
-                Message = $"New {issue.Category} complaint: \"{issue.Title}\"",
+                Message = $"New {deptName} complaint: \"{issue.Title}\"",
                 CreatedAt = DateTime.UtcNow,
                 IsRead = false
             });
@@ -362,13 +371,8 @@ public class IssueController : Controller
 
     private async Task NotifyStaffRatingAsync(Issue issue, int stars)
     {
-        var dept = await _db.Departments
-            .FirstOrDefaultAsync(d => d.IsActive && d.Name.ToLower() == issue.Category.ToLower());
-
-        if (dept == null) return;
-
         var staffUsers = await _db.Users
-            .Where(u => u.CityId == issue.CityId && u.DepartmentId == dept.Id)
+            .Where(u => u.CityId == issue.CityId && u.DepartmentId == issue.DepartmentId)
             .ToListAsync();
 
         string starEmoji = stars switch

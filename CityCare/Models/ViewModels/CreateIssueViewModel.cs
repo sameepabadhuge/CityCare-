@@ -17,6 +17,10 @@ public class CreateIssueViewModel
     [Required]
     public int CityId { get; set; }
 
+    // ✅ NEW
+    [Required(ErrorMessage = "Please select a department.")]
+    public int DepartmentId { get; set; }
+
     [Required, MaxLength(200)]
     public string LocationText { get; set; } = "";
 

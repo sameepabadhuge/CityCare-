@@ -1,11 +1,11 @@
-@model CityCare.Models.ViewModels.CreateIssueViewModel
+﻿@model CityCare.Models.ViewModels.CreateIssueViewModel
 @{
     ViewData["Title"] = "Report New Issue";
 }
 
 <div class="citizen-page">
     <div class="container" style="max-width: 860px;">
-        
+
         <div class="text-center mb-4">
             <h1 class="page-title">Report an Issue</h1>
             <p class="page-subtitle">Help us improve the city by reporting problems you see.</p>
@@ -15,7 +15,7 @@
 
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
-                
+
                 @if (!ViewData.ModelState.IsValid)
                 {
                     <div class="alert-cc error mb-4">
@@ -34,23 +34,42 @@
                 </div>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-md-6">
+
+                    <!-- ✅ Category -->
+                    <div class="col-md-4">
                         <label asp-for="Category" class="form-label-cc">Category</label>
                         <select asp-for="Category" class="form-select-cc w-100" id="Category">
                             <option value="">Select Category...</option>
-                            @foreach (var c in ViewBag.Categories)
+
+                            @foreach (var c in (IEnumerable<string>)(ViewBag.Categories ?? new List<string>()))
                             {
-                                <option value="@c.Value">@c.Text</option>
+                                <option value="@c">@c</option>
                             }
                         </select>
                         <span asp-validation-for="Category" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-6">
+                    <!-- ✅ Department -->
+                    <div class="col-md-4">
+                        <label asp-for="DepartmentId" class="form-label-cc">Department</label>
+                        <select asp-for="DepartmentId" class="form-select-cc w-100" id="DepartmentId">
+                            <option value="">Select Department...</option>
+
+                            @foreach (var d in (IEnumerable<CityCare.Models.Entities.Department>)(ViewBag.Departments ?? new List<CityCare.Models.Entities.Department>()))
+                            {
+                                <option value="@d.Id">@d.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                    </div>
+
+                    <!-- ✅ City -->
+                    <div class="col-md-4">
                         <label asp-for="CityId" class="form-label-cc">City</label>
                         <select asp-for="CityId" class="form-select-cc w-100" id="CityId">
                             <option value="">Select City...</option>
-                            @foreach (var city in ViewBag.Cities)
+
+                            @foreach (var city in (IEnumerable<CityCare.Models.Entities.City>)(ViewBag.Cities ?? new List<CityCare.Models.Entities.City>()))
                             {
                                 <option value="@city.Id">@city.Name</option>
                             }
@@ -63,7 +82,7 @@
                 <div class="info-box-cc mb-4" id="contactInfoBox" style="display:none;">
                     <div class="flex-grow-1">
                         <span class="info-label">Department Contact</span>
-                        <div class="info-value" id="StaffPhoneDisplay">�</div>
+                        <div class="info-value" id="StaffPhoneDisplay">—</div>
                         <input type="hidden" id="StaffPhone" />
                     </div>
                     <small id="StaffPhoneHelp" class="text-muted ms-2"></small>
@@ -89,7 +108,7 @@
                 <div class="mb-4">
                     <label asp-for="ImageFile" class="form-label-cc">Photo Evidence</label>
                     <div class="file-upload-cc" onclick="document.getElementById('ImageFileInput').click();">
-                        <span class="upload-icon">??</span>
+                        <span class="upload-icon">📷</span>
                         <div class="upload-text">Click to upload or drag and drop</div>
                         <div class="upload-hint">JPG, PNG, WEBP (up to 10MB)</div>
                     </div>
@@ -116,7 +135,7 @@
 
     <script>
         (function () {
-            const categoryEl = document.getElementById('Category');
+            const deptEl = document.getElementById('DepartmentId');
             const cityEl = document.getElementById('CityId');
             const phoneDisplayEl = document.getElementById('StaffPhoneDisplay');
             const helpEl = document.getElementById('StaffPhoneHelp');
@@ -125,18 +144,18 @@
             const fileUploadBox = document.querySelector('.file-upload-cc');
 
             // File upload drag and drop
-            fileUploadBox.addEventListener('dragover', (e) => {
+            fileUploadBox?.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 fileUploadBox.style.borderColor = 'var(--yellow)';
                 fileUploadBox.style.background = 'rgba(255, 196, 0, 0.12)';
             });
 
-            fileUploadBox.addEventListener('dragleave', () => {
+            fileUploadBox?.addEventListener('dragleave', () => {
                 fileUploadBox.style.borderColor = 'var(--border)';
                 fileUploadBox.style.background = 'rgba(255, 196, 0, 0.03)';
             });
 
-            fileUploadBox.addEventListener('drop', (e) => {
+            fileUploadBox?.addEventListener('drop', (e) => {
                 e.preventDefault();
                 fileUploadBox.style.borderColor = 'var(--border)';
                 fileUploadBox.style.background = 'rgba(255, 196, 0, 0.03)';
@@ -145,34 +164,33 @@
                 }
             });
 
-            // Update file name on selection
-            imageInput.addEventListener('change', (e) => {
+            imageInput?.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     fileUploadBox.querySelector('.upload-text').textContent = e.target.files[0].name;
                 }
             });
 
             async function loadPhone() {
-                const category = categoryEl?.value;
+                const departmentId = deptEl?.value;
                 const cityId = cityEl?.value;
 
-                phoneDisplayEl.textContent = '�';
+                phoneDisplayEl.textContent = '—';
                 helpEl.textContent = '';
 
-                if (!category || !cityId) {
-                    phoneDisplayEl.textContent = 'Select Category & City to see contact';
+                if (!departmentId || !cityId) {
+                    phoneDisplayEl.textContent = 'Select Department & City to see contact';
                     return;
                 }
 
                 phoneDisplayEl.textContent = 'Loading...';
 
                 try {
-                    const url = `@Url.Action("LookupStaffPhone", "Issue")?category=${encodeURIComponent(category)}&cityId=${encodeURIComponent(cityId)}`;
+                    const url = `@Url.Action("LookupStaffPhone", "Issue")?departmentId=${encodeURIComponent(departmentId)}&cityId=${encodeURIComponent(cityId)}`;
                     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                    
+
                     if (!res.ok) {
-                         phoneDisplayEl.textContent = 'Unavailable';
-                         return;
+                        phoneDisplayEl.textContent = 'Unavailable';
+                        return;
                     }
 
                     const data = await res.json();
@@ -189,10 +207,10 @@
                 }
             }
 
-            categoryEl?.addEventListener('change', loadPhone);
+            deptEl?.addEventListener('change', loadPhone);
             cityEl?.addEventListener('change', loadPhone);
 
-            if(contactBox) contactBox.style.display = 'flex';
+            if (contactBox) contactBox.style.display = 'flex';
             loadPhone();
         })();
     </script>
